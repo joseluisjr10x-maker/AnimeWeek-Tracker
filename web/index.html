@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#10111b"><meta name="description" content="Organiza tu agenda semanal, biblioteca, progreso y rankings de anime."><meta name="application-name" content="AnimeWeek Tracker v95.28"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="theme-icons/aurora.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="theme-icons/aurora.svg"><title>AnimeWeek Tracker v95.28</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#10111b"><meta name="description" content="Organiza tu agenda semanal, biblioteca, progreso y rankings de anime."><meta name="application-name" content="AnimeWeek Tracker v95.29"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="theme-icons/aurora.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="theme-icons/aurora.svg"><title>AnimeWeek Tracker v95.29</title>
 <style>
 :root{--bg:#0d0f18;--panel:#171a28;--panel2:#202438;--text:#f4f5ff;--muted:#a9aec8;--line:#30354d;--cyan:#54e7f5;--pink:#ff66bc;--violet:#a58bff;--gold:#ffc85a;--green:#6ce6ae;--red:#ff7b91}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,#26204b 0,transparent 36%),radial-gradient(ellipse at 95% 15%,#163c50 0,transparent 30%),var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:10px 13px;background:var(--panel2);color:var(--text);font-weight:700}button:hover{filter:brightness(1.12)}button.primary{background:linear-gradient(120deg,#6657dc,#208ea6)}button.subtle{background:transparent;border:1px solid var(--line)}button.danger{color:#ff9aac;border:1px solid #71384a;background:#301d2b}.wrap{max-width:1250px;margin:auto;padding:20px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,var(--violet),var(--cyan));display:grid;place-items:center;font-size:25px;color:#10111b;font-weight:1000;box-shadow:0 8px 30px #5b6eea44}.brand h1{font-size:clamp(22px,4vw,34px);margin:0;letter-spacing:-1px}.brand p{margin:2px 0 0;color:var(--muted);font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap}.hero{background:linear-gradient(120deg,#262147dd,#142e3add);border:1px solid #4a5276;border-radius:24px;padding:22px;display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:18px;overflow:hidden;position:relative}.hero:after{content:'✦';position:absolute;right:25%;top:-35px;font-size:150px;color:#ffffff08}.hero h2{margin:0 0 7px;font-size:clamp(22px,4vw,32px)}.hero p{margin:0;color:#c7cbea;max-width:650px}.stats{display:flex;gap:10px;flex-wrap:wrap}.stat{background:#111521a8;border:1px solid #485071;border-radius:16px;padding:12px 15px;min-width:105px}.stat b{display:block;font-size:24px;color:var(--cyan)}.stat span{color:var(--muted);font-size:12px}.tabs{display:flex;gap:8px;margin:18px 0;flex-wrap:wrap}.tabs button.active{background:linear-gradient(120deg,#5947b5,#176f87);box-shadow:0 5px 20px #4e7de633}.notice{border:1px solid #685b3b;background:#2b2619;color:#f7dba1;padding:12px 14px;border-radius:14px;margin:12px 0 18px;font-size:13px}.section-title{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:20px 0 12px}.section-title h2{margin:0;font-size:22px}.section-title p{margin:3px 0 0;color:var(--muted);font-size:13px}.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}.day{background:#141725eF;border:1px solid var(--line);border-radius:17px;padding:10px;min-width:0}.day-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}.day-head h3{font-size:13px;margin:0;text-transform:uppercase;letter-spacing:.6px}.count{font-size:11px;color:var(--cyan);background:#1d3440;padding:4px 6px;border-radius:7px;white-space:nowrap}.slot{background:#202438;border:1px solid #353b57;border-radius:12px;padding:7px;margin:7px 0;position:relative;overflow:hidden}.slot:before{content:'';position:absolute;inset:0 auto 0 0;width:3px;background:var(--accent,var(--violet))}.slot .title{font-size:12px;font-weight:800;line-height:1.3;padding-left:3px}.slot .ep{font-size:11px;color:var(--muted);margin:4px 0 7px 3px}.slot .slot-actions{display:flex;gap:4px}.slot .slot-actions button{padding:5px 6px;font-size:11px;border-radius:7px;flex:1}.slot.done{opacity:.55}.slot.done .title{text-decoration:line-through}.day-note{color:var(--muted);font-size:11px;margin:8px 2px}.fixed-extras{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.fixed-card,.optional-card{border-radius:14px;background:#171a28;border:1px solid var(--line);padding:12px}.fixed-card strong,.optional-card strong{display:block}.fixed-card small,.optional-card small{color:var(--muted)}.optional-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.library-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.anime-card{background:var(--panel);border:1px solid var(--line);border-radius:17px;overflow:hidden;min-width:0}.poster{height:155px;position:relative;display:flex;align-items:end;padding:12px;background:linear-gradient(145deg,var(--c1,#44357e),var(--c2,#167b89));overflow:hidden}.poster:before{content:'✦';font-size:110px;position:absolute;right:8px;top:-20px;color:#ffffff23;transform:rotate(15deg)}.poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.poster .poster-name{position:relative;z-index:1;font-size:17px;font-weight:1000;line-height:1.05;text-shadow:0 2px 8px #000}.poster .status{position:absolute;top:8px;left:8px;background:#10111bd9;border:1px solid #ffffff2a;border-radius:8px;padding:4px 7px;font-size:10px;font-weight:800;z-index:2}.anime-info{padding:12px}.anime-info h3{margin:0 0 5px;font-size:14px;line-height:1.25}.anime-info p{margin:0 0 10px;color:var(--muted);font-size:12px}.progress-line{height:6px;background:#30354d;border-radius:99px;overflow:hidden;margin:8px 0}.progress-line span{display:block;height:100%;background:linear-gradient(90deg,var(--violet),var(--cyan));border-radius:99px}.card-buttons{display:flex;gap:6px;flex-wrap:wrap}.card-buttons button{font-size:11px;padding:7px 8px;flex:1}.pill{display:inline-block;border:1px solid #414966;border-radius:99px;padding:3px 7px;font-size:10px;color:#cbd2f7;margin:2px}.hidden{display:none!important}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.toolbar input,.toolbar select,.field input,.field select{background:#10131f;color:var(--text);border:1px solid #3b415c;border-radius:10px;padding:10px;min-width:0}.toolbar input{flex:1;min-width:160px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:17px}.empty{padding:28px;text-align:center;color:var(--muted)}.modal-backdrop{position:fixed;inset:0;background:#000b;display:grid;place-items:center;padding:16px;z-index:10}.modal{width:min(540px,100%);max-height:90vh;overflow:auto;background:#171a28;border:1px solid #4a5070;border-radius:20px;padding:20px;box-shadow:0 20px 90px #0008}.modal h2{margin:0 0 14px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:12px;color:var(--muted)}.field input,.field select{width:100%}.field.full{grid-column:1/-1}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.footer{color:var(--muted);font-size:12px;text-align:center;padding:24px 0 10px}.tag{font-size:10px;border-radius:6px;padding:3px 6px;background:#30344c;color:#d9def9}.day.sun .day-head h3{color:#ff83c7}.day.sat .day-head h3{color:#ffd36d}
 @media(max-width:1000px){.week{grid-template-columns:repeat(4,minmax(0,1fr))}.library-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:650px){.wrap{padding:13px}.top{align-items:flex-start;flex-direction:column}.hero{align-items:flex-start;flex-direction:column;padding:17px}.week{grid-template-columns:repeat(2,minmax(0,1fr))}.library-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.poster{height:135px}.fixed-extras{grid-template-columns:repeat(2,1fr)}.optional-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.section-title{align-items:flex-start;flex-direction:column}}@media(max-width:370px){.week{grid-template-columns:1fr}.library-grid{grid-template-columns:1fr 1fr}.poster{height:120px}}
@@ -1046,7 +1046,7 @@ body[data-global-theme="dayofdead"] .home-profile{background:radial-gradient(cir
 <button id="menuImportPlanet">⇧ &nbsp; Importar Anime-Planet</button>
 <button id="menuFindCovers">✦ &nbsp; Buscar portadas</button></nav></div></aside><main class="main-area"><div class="wrap">
 <header class="top app-topbar">
- <div class="brand"><div class="logo app-brand-logo" aria-label="AnimeWeek Tracker"><img src="icon.svg" alt="Logo de AnimeWeek Tracker"></div><div><h1>AnimeWeek <span style="color:var(--cyan)">Tracker</span></h1><p>Tu semana de anime, a tu ritmo.</p></div></div>
+ <div class="brand"><div class="logo app-brand-logo" aria-label="AnimeWeek Tracker"><img id="appBrandLogoImage" src="icon.svg" alt="Logo de AnimeWeek Tracker"></div><div><h1>AnimeWeek <span style="color:var(--cyan)">Tracker</span></h1><p>Tu semana de anime, a tu ritmo.</p></div></div>
  <div class="top-actions"><button type="button" class="theme-picker-trigger" id="themeLogo" aria-label="Personalizar tema" title="Personalizar tema"><span id="themeLogoIcon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></span></button></div>
  <input id="importFile" type="file" accept=".json,.html,.txt,application/json,text/plain,text/html" class="hidden"><div class="hidden" aria-hidden="true"><button id="exportBtn" type="button">Exportar copia</button><button id="importBtn" type="button">Importar copia</button><button id="importPlanetBtn" type="button">Importar Anime-Planet</button><button id="findCoversBtn" type="button">Buscar portadas</button><button id="addAnimeBtn" type="button">Añadir anime</button></div>
 </header>
@@ -1483,13 +1483,28 @@ function getEffectiveTheme(){
 function refreshThemeIcon(theme){
  const id=festiveThemeAssets[theme]?theme:'aurora';
  const icon=document.getElementById('themeLogoIcon');
- if(icon){icon.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>';icon.setAttribute('aria-label','Personalizar tema: '+id);}
- const logo=document.getElementById('themeLogo');
- if(logo){logo.dataset.theme=id;logo.title='Personalizar tema · '+id;}
+ if(icon){
+  icon.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>';
+  icon.setAttribute('aria-label','Personalizar tema: '+id);
+ }
+ const button=document.getElementById('themeLogo');
+ if(button){button.dataset.theme=id;button.title='Personalizar tema · '+id;}
  const iconUrl='theme-icons/'+id+'.svg';
+ const brandLogo=document.getElementById('appBrandLogoImage');
+ if(brandLogo && brandLogo.getAttribute('src')!==iconUrl){
+  brandLogo.src=iconUrl;
+  brandLogo.alt='Logo de AnimeWeek Tracker · tema '+id;
+ }
  document.querySelectorAll('link[rel="icon"],link[rel="apple-touch-icon"]').forEach(link=>{link.href=iconUrl;});
  const manifest=document.querySelector('link[rel="manifest"]');
- if(manifest){const themedManifest={id:'./',name:'AnimeWeek Tracker',short_name:'AnimeWeek',description:'Agenda semanal, biblioteca y progreso de anime.',lang:'es-MX',start_url:'./index.html',scope:'./',display:'standalone',orientation:'any',background_color:getComputedStyle(document.body).getPropertyValue('--bg').trim()||'#0d0f18',theme_color:getComputedStyle(document.body).getPropertyValue('--theme-accent').trim()||'#54e7f5',icons:[{src:iconUrl,sizes:'any',type:'image/svg+xml',purpose:'any maskable'}]};const blob=new Blob([JSON.stringify(themedManifest)],{type:'application/manifest+json'});const nextUrl=URL.createObjectURL(blob);const previous=manifest.dataset.objectUrl;if(previous)URL.revokeObjectURL(previous);manifest.href=nextUrl;manifest.dataset.objectUrl=nextUrl;}
+ if(manifest){
+  const themedManifest={id:'./',name:'AnimeWeek Tracker',short_name:'AnimeWeek',description:'Agenda semanal, biblioteca y progreso de anime.',lang:'es-MX',start_url:'./index.html',scope:'./',display:'standalone',orientation:'any',background_color:getComputedStyle(document.body).getPropertyValue('--bg').trim()||'#0d0f18',theme_color:getComputedStyle(document.body).getPropertyValue('--theme-accent').trim()||'#54e7f5',icons:[{src:iconUrl,sizes:'any',type:'image/svg+xml',purpose:'any maskable'}]};
+  const blob=new Blob([JSON.stringify(themedManifest)],{type:'application/manifest+json'});
+  const nextUrl=URL.createObjectURL(blob),previous=manifest.dataset.objectUrl;
+  if(previous)URL.revokeObjectURL(previous);
+  manifest.href=nextUrl;manifest.dataset.objectUrl=nextUrl;
+ }
+ if(typeof window.renderFestiveWallpaper==='function')window.renderFestiveWallpaper(id);
 }
 function renderProfile(){
  if(!profile||typeof profile!=='object')profile={name:'Anime fan',avatar:'',banner:'',featured:[],cardStyle:'aurora'};
@@ -3375,7 +3390,7 @@ document.getElementById('editBannerBtn').onclick=()=>document.getElementById('ba
 document.getElementById('addAnimeBtn').onclick=()=>openAnimeExplorer();document.getElementById('addAnimeBtn2').onclick=()=>openAnimeExplorer();document.getElementById('searchInput').addEventListener('input',renderLibrary);document.getElementById('filterSelect').addEventListener('change',renderLibrary);document.getElementById('sortSelect').addEventListener('change',renderLibrary);document.getElementById('clearLibraryFilters').addEventListener('click',()=>{document.getElementById('searchInput').value='';document.getElementById('filterSelect').value='all';document.getElementById('sortSelect').value='default';renderLibrary()});function localBackupStamp(){const d=new Date();const pad=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}_${pad(d.getHours())}-${pad(d.getMinutes())}`}
 async function downloadBackup(filename){
  const safeName=filename||`AnimeWeek_Backup_${localBackupStamp()}.json`;
- const backup={...data,backupVersion:38,profile:JSON.parse(JSON.stringify(profile||{})),exportedAt:new Date().toISOString(),appVersion:'95.1'};
+ const backup={...data,backupVersion:38,profile:JSON.parse(JSON.stringify(profile||{})),exportedAt:new Date().toISOString(),appVersion:'95.29.0'};
  const json=JSON.stringify(backup,null,2);
  // En la APK usamos el selector nativo de Android; la descarga HTML de WebView no es fiable.
  try{
@@ -4088,5 +4103,121 @@ addToWaitlistFromLibrary=function(id){awAddToWaitlistBeforeDiscoverStatus(id);co
 })();
 </script>
 <script src="update-center.js"></script>
+
+<style id="v95-29-header-wallpaper-polish">
+/* Cabecera compacta: título centrado y accesos superiores en una misma línea. */
+#festiveWallpaper{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;contain:strict;opacity:1}
+#festiveWallpaper .festive-wallpaper-glyph{position:absolute;display:block;line-height:1;user-select:none;pointer-events:none;opacity:var(--festive-opacity,.16);font-size:var(--festive-size,20px);transform:rotate(var(--festive-rotation,0deg));filter:drop-shadow(0 2px 7px color-mix(in srgb,var(--theme-accent) 25%,transparent))}
+.app-shell{position:relative!important;z-index:1!important;background-color:transparent!important}
+.main-area,.main-area>.wrap,.wrap{background-color:transparent!important}
+body[data-global-theme="halloween"] .app-topbar:after,
+body[data-global-theme="christmas"] .app-topbar:after,
+body[data-global-theme="newyear"] .app-topbar:after,
+body[data-global-theme="valentines"] .app-topbar:after,
+body[data-global-theme="spring"] .app-topbar:after,
+body[data-global-theme="dayofdead"] .app-topbar:after,
+body[data-global-theme="halloween"] .panel:after,
+body[data-global-theme="halloween"] .anime-card:after,
+body[data-global-theme="christmas"] .panel:after,
+body[data-global-theme="christmas"] .anime-card:after,
+body[data-global-theme="newyear"] .panel:after,
+body[data-global-theme="valentines"] .panel:after,
+body[data-global-theme="spring"] .panel:after,
+body[data-global-theme="dayofdead"] .panel:after{content:none!important;display:none!important}
+@media(max-width:700px){
+ .wrap{padding-top:calc(10px + env(safe-area-inset-top))!important}
+ .app-topbar{
+  display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;
+  position:relative!important;min-height:112px!important;padding:12px!important;gap:0!important;margin-bottom:14px!important;
+ }
+ .app-topbar .brand{
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;
+  width:auto!important;max-width:calc(100% - 118px)!important;min-width:0!important;min-height:0!important;
+  margin:0 auto!important;padding:0!important;transform:translateX(-16px);
+ }
+ .app-topbar .brand>div:last-child{min-width:0!important;text-align:center!important}
+ .app-topbar .brand h1{font-size:clamp(22px,6.4vw,28px)!important;line-height:1!important;letter-spacing:-.9px!important;text-align:center!important;margin:0!important}
+ .app-topbar .brand h1 span{color:var(--theme-accent)!important}
+ .app-topbar .brand p{display:block!important;font-size:10px!important;line-height:1.25!important;opacity:.78!important;margin:5px 0 0!important;text-align:center!important}
+ .app-topbar .app-brand-logo{width:47px!important;height:47px!important;flex:0 0 47px!important;border-radius:14px!important}
+ .app-topbar .top-actions{
+  position:absolute!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  top:calc(10px + env(safe-area-inset-top))!important;right:64px!important;width:auto!important;max-width:none!important;
+  height:44px!important;margin:0!important;gap:0!important;z-index:1501!important;
+ }
+ .app-topbar .theme-picker-trigger{width:42px!important;height:42px!important;flex:0 0 42px!important;border-radius:13px!important;padding:0!important}
+ body .app-shell>.side-rail{
+  display:block!important;position:fixed!important;top:calc(10px + env(safe-area-inset-top))!important;
+  right:12px!important;left:auto!important;width:44px!important;height:44px!important;padding:0!important;
+  z-index:1502!important;background:transparent!important;border:0!important;overflow:visible!important;
+ }
+ body #menuTrigger,body .menu-trigger{
+  display:grid!important;place-items:center!important;width:42px!important;height:42px!important;
+  border-radius:13px!important;padding:0!important;background:var(--panel2)!important;border:1px solid var(--line)!important;
+  box-shadow:0 4px 14px #0004!important;
+ }
+ body #menuPop{z-index:1503!important}
+}
+@media(max-width:380px){
+ .app-topbar .brand{max-width:calc(100% - 104px)!important;gap:7px!important;transform:translateX(-12px)}
+ .app-topbar .brand h1{font-size:22px!important}
+ .app-topbar .app-brand-logo{width:43px!important;height:43px!important;flex-basis:43px!important}
+ .app-topbar .brand p{font-size:9px!important}
+}
+@media(prefers-reduced-motion:reduce){#festiveWallpaper .festive-wallpaper-glyph{animation:none!important}}
+</style>
+<script id="v95-29-festive-wallpaper-and-theme-logos">
+(function installAnimeWeekFestiveWallpaper(){
+ if(window.__awFestiveWallpaperV9529)return;
+ window.__awFestiveWallpaperV9529=true;
+ const layouts=[
+  {x:4,y:13,r:-13,s:20,o:.15},{x:23,y:8,r:9,s:17,o:.12},{x:45,y:17,r:-7,s:23,o:.17},
+  {x:69,y:9,r:14,s:18,o:.13},{x:91,y:19,r:-11,s:22,o:.16},{x:12,y:37,r:11,s:16,o:.12},
+  {x:34,y:31,r:-15,s:21,o:.15},{x:57,y:40,r:8,s:17,o:.11},{x:80,y:34,r:-8,s:24,o:.16},
+  {x:96,y:48,r:13,s:16,o:.12},{x:5,y:63,r:-9,s:22,o:.15},{x:27,y:74,r:13,s:17,o:.12},
+  {x:49,y:61,r:-12,s:20,o:.14},{x:73,y:77,r:7,s:23,o:.16},{x:91,y:69,r:-14,s:18,o:.13},
+  {x:16,y:91,r:6,s:17,o:.12},{x:60,y:91,r:-7,s:19,o:.13},{x:84,y:92,r:12,s:16,o:.11}
+ ];
+ const themes={
+  halloween:['🎃','🦇','✦','🕸️','🌙','🕷️','✧'],
+  christmas:['❄️','🎄','✨','🎁','⭐','🦌','❅'],
+  newyear:['✨','🎆','🥂','✦','🎇','⭐','✧'],
+  valentines:['♡','💗','♥','🌹','✨','💕','♡'],
+  spring:['🌸','🦋','✿','🌿','🐝','🌼','✧'],
+  dayofdead:['🌼','💀','🕯️','🌺','✦','🧡','✿']
+ };
+ function render(theme){
+  let layer=document.getElementById('festiveWallpaper');
+  if(!layer){layer=document.createElement('div');layer.id='festiveWallpaper';layer.setAttribute('aria-hidden','true');document.body.insertBefore(layer,document.body.firstChild);}
+  const glyphs=themes[theme]||[];
+  layer.replaceChildren();
+  if(!glyphs.length){layer.hidden=true;return;}
+  layer.hidden=false;
+  layouts.forEach((point,index)=>{
+   const span=document.createElement('span');
+   span.className='festive-wallpaper-glyph';
+   span.textContent=glyphs[index%glyphs.length];
+   span.style.left=point.x+'%';span.style.top=point.y+'%';
+   span.style.setProperty('--festive-size',point.s+'px');
+   span.style.setProperty('--festive-opacity',String(point.o));
+   span.style.setProperty('--festive-rotation',point.r+'deg');
+   layer.appendChild(span);
+  });
+ }
+ window.renderFestiveWallpaper=render;
+ window.refreshThemeIcon=window.refreshThemeIcon||function(){};
+ const originalRefresh=window.refreshThemeIcon;
+ if(!originalRefresh.__awWrapped){
+  const wrapped=function(theme){const result=originalRefresh.apply(this,arguments);render(theme||document.body.dataset.globalTheme||'aurora');return result;};
+  wrapped.__awWrapped=true;
+  window.refreshThemeIcon=wrapped;
+ }
+ const current=document.body.dataset.globalTheme||'aurora';
+ const brand=document.getElementById('appBrandLogoImage');
+ if(brand){const path='theme-icons/'+current+'.svg';brand.src=path;}
+ render(current);
+})();
+</script>
+
 </body>
 </html>
