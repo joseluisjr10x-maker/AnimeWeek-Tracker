@@ -16,7 +16,7 @@ const pkg = JSON.parse(read('package.json'));
 
 assert.match(index, /<script src="update-center\.js"><\/script>/, 'web app loads the update center');
 assert.match(index, /<\/body>\s*<\/html>\s*$/, 'document has a single final HTML close');
-assert.match(updater, /95\.28\.0/, 'updater reports the current app version');
+assert.match(updater, /95\\.29\\.0/, 'updater reports the current app version');
 assert.match(updater, /raw\.githubusercontent\.com/, 'updater reads the GitHub manifest');
 assert.match(updater, /AndroidUpdateInstaller\.downloadAndInstall/, 'updater calls the native Android installer');
 assert.match(main, /"AndroidUpdateInstaller"/, 'MainActivity exposes the native update bridge');
@@ -26,8 +26,8 @@ assert.match(installer, /getInstalledVersion/, 'native updater reports installed
 assert.match(installer, /getLongVersionCode/, 'native updater rejects old versionCode');
 assert.match(manifest, /REQUEST_INSTALL_PACKAGES/, 'app declares package-install permission');
 assert.match(paths, /external-files-path/, 'FileProvider exposes private downloaded APKs');
-assert.match(gradle, /9528000/, 'native versionCode has been advanced');
-assert.equal(pkg.version, '95.28.0');
+assert.match(gradle, /9529000/, 'native versionCode has been advanced');
+assert.equal(pkg.version, '95.29.0');
 assert.equal(latest.appId, 'com.animeweek.tracker');
 assert.equal(latest.version, '95.28.0');
 assert.equal(latest.android.enabled, false, 'APK updates stay disabled until signing is confirmed');
