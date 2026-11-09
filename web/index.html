@@ -1489,6 +1489,7 @@ function refreshThemeIcon(theme){
  }
  const button=document.getElementById('themeLogo');
  if(button){button.dataset.theme=id;button.title='Personalizar tema · '+id;}
+ try{if(window.AndroidUpdateInstaller&&typeof window.AndroidUpdateInstaller.setLauncherTheme==='function')window.AndroidUpdateInstaller.setLauncherTheme(id);}catch(_){}
  const iconUrl='theme-icons/'+id+'.svg';
  const brandLogo=document.getElementById('appBrandLogoImage');
  if(brandLogo && brandLogo.getAttribute('src')!==iconUrl){
