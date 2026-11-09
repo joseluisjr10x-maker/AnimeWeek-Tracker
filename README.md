@@ -21,10 +21,17 @@ El flujo obtiene automáticamente la huella SHA-256 del keystore y comprueba que
 
 **No subas `debug.keystore`, archivos `.jks`, contraseñas ni el contenido Base64 al repositorio.** El `.gitignore` los excluye.
 
+## Probar la compilación inicial (sin publicar)
+
+1. En GitHub abre Actions → Build and publish AnimeWeek Android update.
+2. Pulsa Run workflow, deja la rama `main` y escribe `95.28.0` en Version name.
+3. Esta ejecución manual compila y firma la APK, valida el application ID, versionCode y SHA-256 del certificado, y guarda el APK como artefacto temporal de Actions durante 14 días. **No crea un Release ni activa las actualizaciones dentro de la app.**
+4. Comprueba que la ejecución termine correctamente y descarga el artefacto para revisar la APK.
+
 ## Publicar la primera versión con actualizador
 
-1. Sube el contenido completo del proyecto a la rama `main`.
-2. Crea y sube el tag `v95.28.0`. Eso ejecuta GitHub Actions y publica la APK inicial.
+1. Después de validar el artefacto, crea y sube el tag `v95.28.0`. El evento de tag ejecuta el mismo build y publica la APK como GitHub Release.
+2. El workflow verifica de nuevo la firma de la APK antes de publicarla y actualiza `latest.json` con la URL y SHA-256.
 3. Instala manualmente esa primera APK sobre la instalación existente. El APK actual 2.2 no incluye todavía el Centro de actualizaciones.
 4. Para cada nueva versión, aumenta la versión y crea un tag semántico, por ejemplo `v95.29.0`. GitHub Actions compila, firma, valida y publica el APK; la app recibe el manifiesto actualizado.
 
