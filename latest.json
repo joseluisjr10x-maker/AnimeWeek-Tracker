@@ -1,25 +1,27 @@
 {
   "appId": "com.animeweek.tracker",
   "appName": "AnimeWeek Tracker",
-  "version": "95.27.0",
-  "versionCode": 9527,
+  "version": "95.28.0",
+  "versionCode": 9528000,
   "channel": "stable",
-  "publishedAt": "2026-11-09T00:00:00Z",
-  "releaseNotes": "Initial update manifest. APK distribution will be enabled after native signing is configured.",
-  "minimumSupportedVersion": "95.27.0",
+  "publishedAt": "",
+  "releaseName": "",
+  "releaseNotes": "Centro de actualizaciones integrado. La instalación de APK se habilitará después de verificar la firma digital de la aplicación instalada.",
+  "releaseUrl": "https://github.com/joseluisjr10x-maker/AnimeWeek-Tracker/releases",
+  "minimumSupportedVersion": "95.28.0",
   "web": {
     "enabled": false,
-    "version": "95.27.0",
+    "version": "95.28.0",
     "url": "",
     "sha256": ""
   },
   "android": {
     "enabled": false,
-    "versionCode": 9527,
+    "versionCode": 9528000,
     "apkUrl": "",
     "sha256": "",
     "packageName": "com.animeweek.tracker",
     "signingRequired": true,
-    "notes": "Enable after verifying the signing certificate matches the installed Android app."
+    "notes": "La APK debe tener el mismo certificado de firma que la app instalada."
   }
 }
