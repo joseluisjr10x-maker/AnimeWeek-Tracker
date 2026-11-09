@@ -22,7 +22,7 @@ assert.match(backupBridge, /saveJson\(String filename, String json, String callb
 assert.match(backupBridge, /callback\(\{success:/, 'native backup bridge confirms completion to the web app');
 assert.match(index, /appBrandLogoImage/, 'theme-aware brand logo is present');
 assert.match(index, /v95-29-festive-wallpaper-and-theme-logos/, 'festive background wallpaper is present');
-assert.match(updater, /95\\.29\\.0/, 'updater reports the current app version');
+assert.ok(updater.includes("APP_VERSION = '95.29.0'"), 'updater reports the current app version');
 assert.match(updater, /raw\.githubusercontent\.com/, 'updater reads the GitHub manifest');
 assert.match(updater, /AndroidUpdateInstaller\.downloadAndInstall/, 'updater calls the native Android installer');
 assert.match(main, /"AndroidUpdateInstaller"/, 'MainActivity exposes the native update bridge');
