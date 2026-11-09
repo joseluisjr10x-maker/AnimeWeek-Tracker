@@ -1,0 +1,8 @@
+{
+  "appId": "com.animeweek.tracker",
+  "appName": "AnimeWeek Tracker",
+  "webDir": "web",
+  "server": {
+    "androidScheme": "https"
+  }
+}

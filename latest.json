@@ -6,7 +6,7 @@
   "channel": "stable",
   "publishedAt": "",
   "releaseName": "",
-  "releaseNotes": "Centro de actualizaciones integrado. La instalación de APK se habilitará después de verificar la firma digital de la aplicación instalada.",
+  "releaseNotes": "Centro de actualizaciones integrado. La instalación APK se habilitará después de verificar la firma digital de la aplicación instalada.",
   "releaseUrl": "https://github.com/joseluisjr10x-maker/AnimeWeek-Tracker/releases",
   "minimumSupportedVersion": "95.28.0",
   "web": {

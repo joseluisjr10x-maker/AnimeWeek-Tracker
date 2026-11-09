@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "AnimeWeek Tracker",
+  "short_name": "AnimeWeek",
+  "description": "Agenda semanal, biblioteca y progreso de anime.",
+  "lang": "es-MX",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d0f18",
+  "theme_color": "#54e7f5",
+  "categories": [
+    "entertainment",
+    "lifestyle",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "theme-icons/aurora.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

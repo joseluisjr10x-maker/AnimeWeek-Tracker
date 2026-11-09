@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AnimeWeek Tracker</string>
+    <string name="title_activity_main">AnimeWeek Tracker</string>
+    <string name="package_name">com.animeweek.tracker</string>
+    <string name="custom_url_scheme">com.animeweek.tracker</string>
+</resources>

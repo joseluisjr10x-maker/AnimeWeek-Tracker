@@ -1,0 +1,22 @@
+{
+  "name": "animeweek-tracker",
+  "version": "95.28.0",
+  "private": true,
+  "description": "AnimeWeek Tracker v95.28 adds a GitHub-powered in-app update center with verified Android APK installation.",
+  "scripts": {
+    "android:add": "cap add android",
+    "sync": "cap sync android",
+    "open:android": "cap open android",
+    "doctor": "cap doctor",
+    "test:weekly-integrity": "node tests/weekly-integrity.test.cjs",
+    "test:update-center": "node tests/update-center.test.cjs",
+    "test:all": "npm run test:weekly-integrity && npm run test:update-center"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.3"
+  }
+}

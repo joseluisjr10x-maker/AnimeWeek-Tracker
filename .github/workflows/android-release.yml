@@ -25,7 +25,7 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
         with:
-          ref: \${{ github.event.inputs.tag_name || github.ref }}
+          ref: ${{ github.event.inputs.tag_name || github.ref }}
           fetch-depth: 0
 
       - name: Resolve release version
@@ -33,15 +33,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TAG="\${{ github.event.inputs.tag_name || github.ref_name }}"
+          TAG="${{ github.event.inputs.tag_name || github.ref_name }}"
           if [[ ! "$TAG" =~ ^v?([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             echo "Tag must follow semantic versioning, e.g. v95.28.0" >&2
             exit 1
           fi
-          MAJOR="\${BASH_REMATCH[1]}"
-          MINOR="\${BASH_REMATCH[2]}"
-          PATCH="\${BASH_REMATCH[3]}"
-          VERSION="\${MAJOR}.\${MINOR}.\${PATCH}"
+          MAJOR="${BASH_REMATCH[1]}"
+          MINOR="${BASH_REMATCH[2]}"
+          PATCH="${BASH_REMATCH[3]}"
+          VERSION="${MAJOR}.${MINOR}.${PATCH}"
           VERSION_CODE=$((MAJOR * 100000 + MINOR * 1000 + PATCH))
           if (( VERSION_CODE > 2100000000 )); then
             echo "Android versionCode is above the supported maximum." >&2
@@ -71,14 +71,14 @@ jobs:
 
       - name: Validate signing secrets
         env:
-          ANDROID_KEYSTORE_BASE64: \${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEY_ALIAS: \${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_STORE_PASSWORD: \${{ secrets.ANDROID_STORE_PASSWORD }}
-          ANDROID_KEY_PASSWORD: \${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           set -euo pipefail
           for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEY_ALIAS ANDROID_STORE_PASSWORD ANDROID_KEY_PASSWORD; do
-            if [ -z "\${!name:-}" ]; then
+            if [ -z "${!name:-}" ]; then
               echo "Missing required GitHub Actions secret: $name" >&2
               exit 1
             fi
@@ -94,9 +94,9 @@ jobs:
       - name: Configure and inspect signing key
         id: signing
         env:
-          ANDROID_KEYSTORE_BASE64: \${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEY_ALIAS: \${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_STORE_PASSWORD: \${{ secrets.ANDROID_STORE_PASSWORD }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
         run: |
           set -euo pipefail
           KEYSTORE_PATH="$RUNNER_TEMP/animeweek-debug.keystore"
@@ -113,20 +113,20 @@ jobs:
 
       - name: Build signed release APK
         env:
-          ANDROID_STORE_PASSWORD: \${{ secrets.ANDROID_STORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: \${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: \${{ secrets.ANDROID_KEY_PASSWORD }}
-          AW_VERSION_NAME: \${{ steps.version.outputs.version }}
-          AW_VERSION_CODE: \${{ steps.version.outputs.version_code }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          AW_VERSION_NAME: ${{ steps.version.outputs.version }}
+          AW_VERSION_CODE: ${{ steps.version.outputs.version_code }}
         working-directory: android
         run: ./gradlew :app:assembleRelease --no-daemon
 
       - name: Verify package, version and signing certificate
         id: verify
         env:
-          EXPECTED_CERT: \${{ steps.signing.outputs.expected_cert }}
-          EXPECTED_VERSION: \${{ steps.version.outputs.version }}
-          EXPECTED_VERSION_CODE: \${{ steps.version.outputs.version_code }}
+          EXPECTED_CERT: ${{ steps.signing.outputs.expected_cert }}
+          EXPECTED_VERSION: ${{ steps.version.outputs.version }}
+          EXPECTED_VERSION_CODE: ${{ steps.version.outputs.version_code }}
         shell: bash
         run: |
           set -euo pipefail
@@ -148,12 +148,12 @@ jobs:
 
       - name: Publish GitHub Release with APK
         env:
-          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
-          TAG: \${{ steps.version.outputs.tag }}
-          VERSION: \${{ steps.version.outputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           set -euo pipefail
-          APK="\${{ steps.verify.outputs.apk }}"
+          APK="${{ steps.verify.outputs.apk }}"
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$TAG" "$APK#AnimeWeek-Tracker-$VERSION.apk" --clobber --repo "$GITHUB_REPOSITORY"
           else
@@ -162,12 +162,11 @@ jobs:
 
       - name: Update latest.json on main
         env:
-          TAG: \${{ steps.version.outputs.tag }}
-          VERSION: \${{ steps.version.outputs.version }}
-          VERSION_CODE: \${{ steps.version.outputs.version_code }}
-          APK_SHA256: \${{ steps.verify.outputs.sha256 }}
-          RELEASE_URL: https://github.com/\${{ github.repository }}/releases/tag/\${{ steps.version.outputs.tag }}
-          APK_URL: https://github.com/\${{ github.repository }}/releases/download/\${{ steps.version.outputs.tag }}/AnimeWeek-Tracker-\${{ steps.version.outputs.version }}.apk
+          VERSION: ${{ steps.version.outputs.version }}
+          VERSION_CODE: ${{ steps.version.outputs.version_code }}
+          APK_SHA256: ${{ steps.verify.outputs.sha256 }}
+          RELEASE_URL: https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.tag }}
+          APK_URL: https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag }}/AnimeWeek-Tracker-${{ steps.version.outputs.version }}.apk
         shell: bash
         run: |
           set -euo pipefail
@@ -176,11 +175,12 @@ jobs:
           python - <<'PY'
           import json, os
           version = os.environ['VERSION']
+          version_code = int(os.environ['VERSION_CODE'])
           manifest = {
             'appId': 'com.animeweek.tracker',
             'appName': 'AnimeWeek Tracker',
             'version': version,
-            'versionCode': int(os.environ['VERSION_CODE']),
+            'versionCode': version_code,
             'channel': 'stable',
             'publishedAt': __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),
             'releaseName': 'AnimeWeek Tracker ' + version,
@@ -190,7 +190,7 @@ jobs:
             'web': {'enabled': False, 'version': version, 'url': '', 'sha256': ''},
             'android': {
               'enabled': True,
-              'versionCode': int(os.environ['VERSION_CODE']),
+              'versionCode': version_code,
               'apkUrl': os.environ['APK_URL'],
               'sha256': os.environ['APK_SHA256'],
               'packageName': 'com.animeweek.tracker',
