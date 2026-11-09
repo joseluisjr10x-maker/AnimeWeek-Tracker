@@ -26,6 +26,10 @@ assert.match(updater, /95\\.29\\.0/, 'updater reports the current app version');
 assert.match(updater, /raw\.githubusercontent\.com/, 'updater reads the GitHub manifest');
 assert.match(updater, /AndroidUpdateInstaller\.downloadAndInstall/, 'updater calls the native Android installer');
 assert.match(main, /"AndroidUpdateInstaller"/, 'MainActivity exposes the native update bridge');
+assert.match(installer, /setLauncherTheme/, 'native bridge can switch the launcher icon with the selected theme');
+assert.match(manifest, /LauncherAurora/, 'Android has a default theme launcher alias');
+assert.match(manifest, /LauncherHalloween/, 'Android includes festive launcher aliases');
+
 assert.match(installer, /SHA-256/, 'native updater validates SHA-256');
 assert.match(installer, /getApkContentsSigners/, 'native updater verifies the APK signer');
 assert.match(installer, /getInstalledVersion/, 'native updater reports installed version to web UI');
