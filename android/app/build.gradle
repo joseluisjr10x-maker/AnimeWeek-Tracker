@@ -7,8 +7,8 @@ android {
         applicationId "com.animeweek.tracker"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode (System.getenv("AW_VERSION_CODE") ? System.getenv("AW_VERSION_CODE").toInteger() : 9528000)
-        versionName (System.getenv("AW_VERSION_NAME") ?: "95.28.0")
+        versionCode (System.getenv("AW_VERSION_CODE") ? System.getenv("AW_VERSION_CODE").toInteger() : 9529000)
+        versionName (System.getenv("AW_VERSION_NAME") ?: "95.29.0")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
