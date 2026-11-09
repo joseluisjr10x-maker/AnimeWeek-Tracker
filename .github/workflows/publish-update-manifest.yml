@@ -1,0 +1,114 @@
+name: Publish AnimeWeek update manifest
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: animeweek-update-manifest
+  cancel-in-progress: false
+
+jobs:
+  publish-manifest:
+    if: \${{ !github.event.release.prerelease && !github.event.release.draft }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download APK asset and calculate SHA-256
+        id: apk
+        env:
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: \${{ github.repository }}
+          RELEASE_TAG: \${{ github.event.release.tag_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK_URL="$(jq -r '[.release.assets[] | select(.name | ascii_downcase | endswith(".apk"))][0].browser_download_url // empty' "$GITHUB_EVENT_PATH")"
+          if [ -z "$APK_URL" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "url=" >> "$GITHUB_OUTPUT"
+            echo "sha256=" >> "$GITHUB_OUTPUT"
+            echo "No APK asset was attached to this release; publishing metadata only."
+            exit 0
+          fi
+          mkdir -p "$RUNNER_TEMP/animeweek-apk"
+          gh release download "$RELEASE_TAG" --repo "$GH_REPO" --pattern "*.apk" --dir "$RUNNER_TEMP/animeweek-apk"
+          APK_FILE="$(find "$RUNNER_TEMP/animeweek-apk" -maxdepth 1 -type f -iname '*.apk' | head -n 1)"
+          if [ -z "$APK_FILE" ]; then
+            echo "Could not find the downloaded APK." >&2
+            exit 1
+          fi
+          SHA="$(sha256sum "$APK_FILE" | cut -d ' ' -f 1)"
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+          echo "url=$APK_URL" >> "$GITHUB_OUTPUT"
+          echo "sha256=$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Generate latest.json
+        env:
+          RELEASE_TAG: \${{ github.event.release.tag_name }}
+          RELEASE_NAME: \${{ github.event.release.name }}
+          RELEASE_BODY: \${{ github.event.release.body }}
+          RELEASE_URL: \${{ github.event.release.html_url }}
+          RELEASE_PUBLISHED_AT: \${{ github.event.release.published_at }}
+          APK_ENABLED: \${{ steps.apk.outputs.enabled }}
+          APK_URL: \${{ steps.apk.outputs.url }}
+          APK_SHA256: \${{ steps.apk.outputs.sha256 }}
+        run: |
+          python - <<'PY'
+          import json, os, re
+          tag = os.environ["RELEASE_TAG"]
+          match = re.fullmatch(r"v?(\d+)\.(\d+)\.(\d+)", tag)
+          if not match:
+              raise SystemExit("Release tag must use semantic versioning, for example v95.28.0")
+          major, minor, patch = map(int, match.groups())
+          version = f"{major}.{minor}.{patch}"
+          version_code = major * 100000 + minor * 1000 + patch
+          enabled = os.environ.get("APK_ENABLED") == "true"
+          manifest = {
+              "appId": "com.animeweek.tracker",
+              "appName": "AnimeWeek Tracker",
+              "version": version,
+              "versionCode": version_code,
+              "channel": "stable",
+              "publishedAt": os.environ.get("RELEASE_PUBLISHED_AT", ""),
+              "releaseName": os.environ.get("RELEASE_NAME", ""),
+              "releaseNotes": os.environ.get("RELEASE_BODY", ""),
+              "releaseUrl": os.environ.get("RELEASE_URL", ""),
+              "minimumSupportedVersion": "95.27.0",
+              "web": {
+                  "enabled": False,
+                  "version": version,
+                  "url": "",
+                  "sha256": ""
+              },
+              "android": {
+                  "enabled": enabled,
+                  "versionCode": version_code,
+                  "apkUrl": os.environ.get("APK_URL", ""),
+                  "sha256": os.environ.get("APK_SHA256", ""),
+                  "packageName": "com.animeweek.tracker",
+                  "signingRequired": True,
+                  "notes": "APK updates require the same Android signing certificate as the installed app."
+              }
+          }
+          with open("latest.json", "w", encoding="utf-8") as f:
+              json.dump(manifest, f, ensure_ascii=False, indent=2)
+              f.write("\n")
+          PY
+
+      - name: Commit update manifest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add latest.json
+          if git diff --cached --quiet; then
+            echo "Manifest is already current."
+            exit 0
+          fi
+          git commit -m "Update AnimeWeek manifest for \${GITHUB_REF_NAME}"
+          git push
