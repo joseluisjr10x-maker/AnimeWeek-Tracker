@@ -35,7 +35,7 @@ public class MainActivity extends BridgeActivity {
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         if (animeWeekUpdateInstaller != null) {
             animeWeekUpdateInstaller.onHostResume();
@@ -43,7 +43,7 @@ public class MainActivity extends BridgeActivity {
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         if (animeWeekUpdateInstaller != null) {
             animeWeekUpdateInstaller.release();
         }
