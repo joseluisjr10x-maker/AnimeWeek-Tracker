@@ -81,9 +81,9 @@ public final class UpdateInstaller {
     public String getInstalledVersion() {
         try {
             PackageInfo info = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0);
-            return info.versionName == null ? "95.28.0" : info.versionName;
+            return info.versionName == null ? "95.29.0" : info.versionName;
         } catch (Exception ignored) {
-            return "95.28.0";
+            return "95.29.0";
         }
     }
 
