@@ -1,11 +1,11 @@
-/* AnimeWeek Tracker — GitHub update center, v95.28.0 */
+/* AnimeWeek Tracker — GitHub update center, v95.29.0 */
 (function installAnimeWeekUpdateCenter() {
   'use strict';
   if (window.__animeWeekUpdateCenterInstalled) return;
   window.__animeWeekUpdateCenterInstalled = true;
 
   var APP_ID = 'com.animeweek.tracker';
-  var APP_VERSION = '95.28.0';
+  var APP_VERSION = '95.29.0';
   var OWNER = 'joseluisjr10x-maker';
   var REPO = 'AnimeWeek-Tracker';
   var MANIFEST_URL = 'https://raw.githubusercontent.com/' + OWNER + '/' + REPO + '/main/latest.json';
