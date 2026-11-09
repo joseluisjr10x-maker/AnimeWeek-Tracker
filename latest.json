@@ -1,0 +1,25 @@
+{
+  "appId": "com.animeweek.tracker",
+  "appName": "AnimeWeek Tracker",
+  "version": "95.27.0",
+  "versionCode": 9527,
+  "channel": "stable",
+  "publishedAt": "2026-11-09T00:00:00Z",
+  "releaseNotes": "Initial update manifest. APK distribution will be enabled after native signing is configured.",
+  "minimumSupportedVersion": "95.27.0",
+  "web": {
+    "enabled": false,
+    "version": "95.27.0",
+    "url": "",
+    "sha256": ""
+  },
+  "android": {
+    "enabled": false,
+    "versionCode": 9527,
+    "apkUrl": "",
+    "sha256": "",
+    "packageName": "com.animeweek.tracker",
+    "signingRequired": true,
+    "notes": "Enable after verifying the signing certificate matches the installed Android app."
+  }
+}
