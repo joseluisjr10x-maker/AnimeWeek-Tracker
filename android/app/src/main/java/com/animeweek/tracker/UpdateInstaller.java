@@ -3,6 +3,7 @@ package com.animeweek.tracker;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -83,6 +84,51 @@ public final class UpdateInstaller {
             return info.versionName == null ? "95.28.0" : info.versionName;
         } catch (Exception ignored) {
             return "95.28.0";
+        }
+    }
+
+    @JavascriptInterface
+    public void setLauncherTheme(String theme) {
+        final String normalized = normalizeLauncherTheme(theme);
+        mainHandler.post(() -> applyLauncherTheme(normalized));
+    }
+
+    private String normalizeLauncherTheme(String theme) {
+        String value = theme == null ? "" : theme.trim().toLowerCase(Locale.ROOT);
+        switch (value) {
+            case "aurora": case "violet": case "ocean": case "sunset":
+            case "gold": case "mono": case "halloween": case "christmas":
+            case "newyear": case "valentines": case "spring": case "dayofdead":
+                return value;
+            default:
+                return "aurora";
+        }
+    }
+
+    private void applyLauncherTheme(String theme) {
+        String[] themes = {"aurora","violet","ocean","sunset","gold","mono",
+                "halloween","christmas","newyear","valentines","spring","dayofdead"};
+        PackageManager manager = activity.getPackageManager();
+        String targetSuffix = Character.toUpperCase(theme.charAt(0)) + theme.substring(1);
+        try {
+            // Habilitar primero el destino evita que el dispositivo se quede sin icono lanzador.
+            ComponentName target = new ComponentName(activity.getPackageName(),
+                    activity.getPackageName() + ".Launcher" + targetSuffix);
+            manager.setComponentEnabledSetting(target,
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    PackageManager.DONT_KILL_APP);
+
+            for (String item : themes) {
+                if (item.equals(theme)) continue;
+                String suffix = Character.toUpperCase(item.charAt(0)) + item.substring(1);
+                ComponentName component = new ComponentName(activity.getPackageName(),
+                        activity.getPackageName() + ".Launcher" + suffix);
+                manager.setComponentEnabledSetting(component,
+                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                        PackageManager.DONT_KILL_APP);
+            }
+        } catch (Exception error) {
+            android.util.Log.w("AnimeWeekUpdate", "No se pudo cambiar el icono de lanzamiento para el tema " + theme, error);
         }
     }
 
