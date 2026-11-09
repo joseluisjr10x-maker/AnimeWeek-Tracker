@@ -6,9 +6,10 @@ on:
       - 'v*.*.*'
   workflow_dispatch:
     inputs:
-      tag_name:
-        description: Existing semantic version tag to build (for example v95.28.0)
+      version:
+        description: Version name for a test build (for example 95.28.0)
         required: true
+        default: '95.28.0'
         type: string
 
 permissions:
@@ -25,7 +26,7 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag_name || github.ref }}
+          ref: ${{ github.event_name == 'push' && github.ref || github.sha }}
           fetch-depth: 0
 
       - name: Resolve release version
@@ -33,9 +34,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TAG="${{ github.event.inputs.tag_name || github.ref_name }}"
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            TAG="${GITHUB_REF_NAME}"
+          else
+            TAG="v${{ github.event.inputs.version }}"
+          fi
           if [[ ! "$TAG" =~ ^v?([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-            echo "Tag must follow semantic versioning, e.g. v95.28.0" >&2
+            echo "Version must follow semantic versioning, e.g. 95.28.0" >&2
             exit 1
           fi
           MAJOR="${BASH_REMATCH[1]}"
@@ -146,7 +151,17 @@ jobs:
           echo "apk=$APK" >> "$GITHUB_OUTPUT"
           echo "sha256=$(sha256sum "$APK" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
 
+      - name: Upload test APK artifact (manual build only)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnimeWeek-Tracker-${{ steps.version.outputs.version }}-signed-test-apk
+          path: ${{ steps.verify.outputs.apk }}
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Publish GitHub Release with APK
+        if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.version.outputs.tag }}
@@ -161,6 +176,7 @@ jobs:
           fi
 
       - name: Update latest.json on main
+        if: github.event_name == 'push'
         env:
           VERSION: ${{ steps.version.outputs.version }}
           VERSION_CODE: ${{ steps.version.outputs.version_code }}
