@@ -6,7 +6,7 @@ Proyecto web y Android nativo basado en Capacitor 7.
 
 La app consulta `latest.json` en la rama `main` del repositorio oficial. Cuando se publica una versión Android, GitHub Actions compila el APK firmado, valida application ID, versionCode y certificado, publica el GitHub Release y actualiza el manifiesto. La aplicación descarga desde GitHub, verifica SHA-256, vuelve a comprobar paquete, versión y certificado instalado y abre el instalador de Android. Android siempre solicita confirmación.
 
-El manifiesto inicial mantiene `android.enabled=false` hasta que se publique la primera APK firmada y verificada. No actives esa bandera manualmente.
+El manifiesto publicado sigue apuntando a la última versión estable hasta que se cree un Release firmado. La bandera `android.enabled` solo se activa mediante el workflow de publicación después de validar el APK.
 
 ## GitHub Actions Secrets
 
@@ -34,6 +34,13 @@ El flujo obtiene automáticamente la huella SHA-256 del keystore y comprueba que
 2. El workflow verifica de nuevo la firma de la APK antes de publicarla y actualiza `latest.json` con la URL y SHA-256.
 3. Instala manualmente esa primera APK sobre la instalación existente. El APK actual 2.2 no incluye todavía el Centro de actualizaciones.
 4. Para cada nueva versión, aumenta la versión y crea un tag semántico, por ejemplo `v95.29.0`. GitHub Actions compila, firma, valida y publica el APK; la app recibe el manifiesto actualizado.
+
+## Cambios de v95.29.0
+
+- El puente de respaldo Android ahora confirma al frontend el resultado del guardado SAF; la copia solo se marca como exitosa después de cerrar el archivo.
+- La cabecera móvil centra el título, reduce el espacio vertical y alinea los controles superiores.
+- Los adornos festivos se distribuyen como una capa ambiental detrás del contenido.
+- Los logos del encabezado, favicon/PWA y el icono de lanzamiento nativo cambian según el tema. Android utiliza aliases de launcher; el sistema puede tardar unos instantes en refrescar su caché visual.
 
 ## Desarrollo local
 
