@@ -2,7 +2,7 @@
   "name": "animeweek-tracker",
   "version": "95.29.0",
   "private": true,
-  "description": "AnimeWeek Tracker v95.29 improves Android backups, home header and theme artwork a GitHub-powered in-app update center with verified Android APK installation.",
+  "description": "AnimeWeek Tracker v95.29 adds reliable Android backup confirmation, a centered mobile header, seasonal wallpaper decorations, and theme-specific app logos.",
   "scripts": {
     "android:add": "cap add android",
     "sync": "cap sync android",
