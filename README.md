@@ -1,4 +1,4 @@
-# AnimeWeek Tracker v95.28.0
+# AnimeWeek Tracker v95.29.0
 
 Proyecto web y Android nativo basado en Capacitor 7.
 
@@ -24,13 +24,13 @@ El flujo obtiene automáticamente la huella SHA-256 del keystore y comprueba que
 ## Probar la compilación inicial (sin publicar)
 
 1. En GitHub abre Actions → Build and publish AnimeWeek Android update.
-2. Pulsa Run workflow, deja la rama `main` y escribe `95.28.0` en Version name.
+2. Pulsa Run workflow, deja la rama `main` y escribe `95.29.0` en Version name.
 3. Esta ejecución manual compila y firma la APK, valida el application ID, versionCode y SHA-256 del certificado, y guarda el APK como artefacto temporal de Actions durante 14 días. **No crea un Release ni activa las actualizaciones dentro de la app.**
 4. Comprueba que la ejecución termine correctamente y descarga el artefacto para revisar la APK.
 
 ## Publicar la primera versión con actualizador
 
-1. Después de validar el artefacto, crea y sube el tag `v95.28.0`. El evento de tag ejecuta el mismo build y publica la APK como GitHub Release.
+1. Después de validar el artefacto, crea y sube el tag `v95.29.0`. El evento de tag ejecuta el mismo build y publica la APK como GitHub Release.
 2. El workflow verifica de nuevo la firma de la APK antes de publicarla y actualiza `latest.json` con la URL y SHA-256.
 3. Instala manualmente esa primera APK sobre la instalación existente. El APK actual 2.2 no incluye todavía el Centro de actualizaciones.
 4. Para cada nueva versión, aumenta la versión y crea un tag semántico, por ejemplo `v95.29.0`. GitHub Actions compila, firma, valida y publica el APK; la app recibe el manifiesto actualizado.
@@ -49,7 +49,7 @@ npx cap open android
 ## Identidad Android
 
 - Application ID: `com.animeweek.tracker`
-- Versión base: `95.28.0`
-- versionCode base: `9528000`
+- Versión base: `95.29.0`
+- versionCode base: `9529000`
 
 Las actualizaciones firmadas con el mismo certificado y application ID conservan los datos privados de la instalación.
