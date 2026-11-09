@@ -6,7 +6,7 @@
   window.__awUpdateCenterInstalled = true;
 
   var APP_ID = 'com.animeweek.tracker';
-  var APP_VERSION = '95.27.0';
+  var APP_VERSION = '95.28.0';
   var MANIFEST_URL = 'https://raw.githubusercontent.com/joseluisjr10x-maker/AnimeWeek-Tracker/main/latest.json';
   var RELEASES_URL = 'https://github.com/joseluisjr10x-maker/AnimeWeek-Tracker/releases';
   var overlay = null;
@@ -137,7 +137,7 @@
       if (comparison > 0) {
         setStatus('Hay una versión más reciente disponible.', false);
         renderAvailable(manifest);
-      } else {
+      } else if (comparison === 0) {
         setStatus('Tienes la versión más reciente publicada (' + manifest.version + ').', false);
         result.innerHTML = '<div class="aw-update-box"><strong>Tu aplicación está actualizada.</strong><p>No hay una versión más nueva que la instalada.</p><a href="' + RELEASES_URL + '" target="_blank" rel="noopener" style="font-size:12px;color:var(--cyan)">Consultar historial de versiones</a></div>';
       }
