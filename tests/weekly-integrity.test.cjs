@@ -10,6 +10,7 @@ function sliceBetween(start, end) {
 const helperCode = sliceBetween('function aniListConfirmedDay(a){', 'async function previewWeeklyRenewal(manual=false){');
 const anchorCode = sliceBetween('function prepareAiringAnchor(proposal,id,targetDay,nextEpisode,latestAired,capacities,days){', 'function normalizeNonAiringSlots(proposal, sourceIds, days){');
 const normalizeCode = sliceBetween('function normalizeNonAiringSlots(proposal, sourceIds, days){', 'function proposalMarksFinished(proposal,id,a){');
+const redistributionCode = sliceBetween('function proposalMarksFinished(proposal,id,a){', 'function aniListConfirmedDay(a){');
 const scheduledCode = sliceBetween('function isScheduled(id){', 'function queueEntry(id,reason){');
 const applyCode = sliceBetween('function applyWeeklyRenewal(){', '// Reorganización manual de la semana ACTUAL.');
 const library = {
@@ -47,7 +48,7 @@ const context = {
   document: {getElementById: () => null}
 };
 vm.createContext(context);
-vm.runInContext(helperCode + '\n' + anchorCode + '\n' + normalizeCode + '\n' + scheduledCode + '\n' + applyCode, context);
+vm.runInContext(helperCode + '\n' + anchorCode + '\n' + normalizeCode + '\n' + redistributionCode + '\n' + scheduledCode + '\n' + applyCode, context);
 const run = (code) => vm.runInContext(code, context);
 const days = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
 const capacities = {lunes:1,martes:0,miércoles:1,jueves:0,viernes:0,sábado:0,domingo:0};
