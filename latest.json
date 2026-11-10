@@ -18,7 +18,7 @@
   "android": {
     "enabled": true,
     "versionCode": 9530002,
-    "apkUrl": "https://github.com/joseluisjr10x-maker/AnimeWeek-Tracker/releases/download/v95.30.2/AnimeWeek-Tracker-95.30.2.apk",
+    "apkUrl": "https://github.com/joseluisjr10x-maker/AnimeWeek-Tracker/releases/download/v95.30.2/app-release.apk",
     "sha256": "079c945726b04e059e900ff7ffeb48885351e3f8103e7e3ed1e89b42298ec180",
     "packageName": "com.animeweek.tracker",
     "signingRequired": true,
