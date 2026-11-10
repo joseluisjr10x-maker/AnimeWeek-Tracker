@@ -5,7 +5,7 @@
   window.__animeWeekUpdateCenterInstalled = true;
 
   var APP_ID = 'com.animeweek.tracker';
-  var APP_VERSION = '95.30.1';
+  var APP_VERSION = '95.30.2';
   var OWNER = 'joseluisjr10x-maker';
   var REPO = 'AnimeWeek-Tracker';
   var MANIFEST_URL = 'https://raw.githubusercontent.com/' + OWNER + '/' + REPO + '/main/latest.json';
