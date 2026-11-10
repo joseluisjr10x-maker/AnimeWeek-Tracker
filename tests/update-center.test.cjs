@@ -69,9 +69,9 @@ assert.match(paths, /external-files-path/, 'FileProvider exposes private downloa
 assert.match(gradle, /9530001/, 'native versionCode has been advanced');
 assert.equal(pkg.version, '95.30.1');
 assert.equal(latest.appId, 'com.animeweek.tracker');
-assert.equal(latest.version, '95.29.0');
-assert.equal(latest.android.enabled, true, 'the verified v95.29.0 Android Release is enabled');
-assert.equal(latest.android.versionCode, 9529000);
+assert.equal(latest.version, '95.30.0');
+assert.equal(latest.android.enabled, true, 'the verified v95.30.0 Android Release is enabled');
+assert.equal(latest.android.versionCode, 9530000);
 assert.ok(latest.android.apkUrl.endsWith('/app-release.apk'), 'latest manifest URL matches the actual Release APK asset');
 assert.ok(latest.android.apkUrl.includes('/v95.30.0/'), 'latest manifest points to the official v95.30.0 APK');
 console.log('Update center integration checks passed.');
