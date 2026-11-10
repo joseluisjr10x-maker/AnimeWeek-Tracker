@@ -1,4 +1,4 @@
-# AnimeWeek Tracker v95.29.0
+# AnimeWeek Tracker v95.30.0
 
 Proyecto web y Android nativo basado en Capacitor 7.
 
@@ -35,12 +35,16 @@ El flujo obtiene automáticamente la huella SHA-256 del keystore y comprueba que
 3. Solo si todo pasa, publica el APK en GitHub Releases y actualiza `latest.json` con la URL de descarga y SHA-256.
 4. La aplicación instalada consulta el manifiesto y ofrece las versiones posteriores. La primera versión base se instala manualmente; las siguientes se podrán descargar desde el Centro de actualizaciones.
 
-## Cambios de v95.29.0
+## Cambios de v95.30.0
 
 - El puente de respaldo Android ahora confirma al frontend el resultado del guardado SAF; la copia solo se marca como exitosa después de cerrar el archivo.
 - La cabecera móvil centra el título, reduce el espacio vertical y alinea los controles superiores.
 - Los adornos festivos se distribuyen como una capa ambiental detrás del contenido.
 - Los logos del encabezado, favicon/PWA y el icono de lanzamiento nativo cambian según el tema. Android utiliza aliases de launcher; el sistema puede tardar unos instantes en refrescar su caché visual.
+
+## Temas e iconos v95.30.0
+
+La aplicación usa los 12 emblemas originales de `web/assets/theme-icons/*.webp`. Android copia esos WebP a recursos `drawable-nodpi` antes de compilar; los aliases de launcher y el encabezado usan las mismas ilustraciones. Cada tema adapta fondo, tarjetas, navegación, campos, botones y acentos a la paleta de su emblema.
 
 ## Desarrollo local
 
@@ -56,7 +60,7 @@ npx cap open android
 ## Identidad Android
 
 - Application ID: `com.animeweek.tracker`
-- Versión base: `95.29.0`
+- Versión base: `95.30.0`
 - versionCode base: `9529000`
 
 Las actualizaciones firmadas con el mismo certificado y application ID conservan los datos privados de la instalación.
