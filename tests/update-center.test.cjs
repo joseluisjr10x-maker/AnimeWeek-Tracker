@@ -29,20 +29,21 @@ assert.match(updater, /raw\.githubusercontent\.com/, 'updater reads the GitHub m
 assert.match(updater, /AndroidUpdateInstaller\.downloadAndInstall/, 'updater calls the native Android installer');
 assert.match(main, /"AndroidUpdateInstaller"/, 'MainActivity exposes the native update bridge');
 assert.match(installer, /setLauncherTheme/, 'native bridge can switch the launcher icon with the selected theme');
-assert.match(installer, /95\\.30\\.0/, 'native updater fallback version is current');
+assert.ok(installer.includes('95.30.0'), 'native updater fallback version is current');
 assert.match(manifest, /LauncherAurora/, 'Android has a default theme launcher alias');
 assert.match(manifest, /LauncherHalloween/, 'Android includes festive launcher aliases');
-assert.match(manifest, /@drawable\\/animeweek_icon_aurora/, 'Android launcher uses the original Aurora emblem');
-assert.match(manifest, /@drawable\\/animeweek_icon_dayofdead/, 'Android launcher uses the original Day of the Dead emblem');
+assert.ok(manifest.includes('@drawable/animeweek_icon_aurora'), 'Android launcher uses the original Aurora emblem');
+assert.ok(manifest.includes('@drawable/animeweek_icon_dayofdead'), 'Android launcher uses the original Day of the Dead emblem');
 assert.match(gradle, /copyAnimeWeekThemeIcons/, 'Gradle copies theme emblems into Android drawable resources');
-assert.match(gradle, /web\\/assets\\/theme-icons/, 'Android resources come from the original web theme artwork');
+assert.ok(gradle.includes('web/assets/theme-icons'), 'Android resources come from the original web theme artwork');
 assert.ok(index.includes("const iconUrl=festiveThemeAssets[id]||'assets/theme-icons/aurora.webp'"), 'header and favicon use original theme WebP artwork');
 assert.ok(index.includes('v95-30-theme-surface-cohesion'), 'theme palettes style app backgrounds and cards');
+assert.ok(index.includes('const palettes') === false, 'theme logic remains static and does not inject computed palette source');
 assert.equal(webManifest.icons[0].src, 'assets/theme-icons/aurora.webp');
 assert.equal(webManifest.icons[0].type, 'image/webp');
 for (const theme of themeNames) {
   assert.ok(fs.existsSync(path.join(root, 'web/assets/theme-icons', theme + '.webp')), 'original theme art exists: ' + theme);
-  assert.match(manifest, new RegExp('@drawable/animeweek_icon_' + theme + '\\\\b'), 'Android launcher alias references original art: ' + theme);
+  assert.ok(manifest.includes('@drawable/animeweek_icon_' + theme), 'Android launcher alias references original art: ' + theme);
 }
 
 assert.match(installer, /SHA-256/, 'native updater validates SHA-256');
