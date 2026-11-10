@@ -194,7 +194,7 @@ jobs:
           VERSION_CODE: ${{ steps.version.outputs.version_code }}
           APK_SHA256: ${{ steps.verify.outputs.sha256 }}
           RELEASE_URL: https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.tag }}
-          APK_URL: https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag }}/AnimeWeek-Tracker-${{ steps.version.outputs.version }}.apk
+          APK_URL: https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag }}/app-release.apk
         shell: bash
         run: |
           set -euo pipefail
