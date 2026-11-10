@@ -1,8 +1,8 @@
 {
   "name": "animeweek-tracker",
-  "version": "95.30.0",
+  "version": "95.30.1",
   "private": true,
-  "description": "AnimeWeek Tracker v95.30 restores the original 12 illustrated theme emblems across the app and Android launcher, with color palettes matched to each emblem.",
+  "description": "AnimeWeek Tracker v95.30.1 removes dark logo rims and adds opt-in background notifications for new GitHub releases.",
   "scripts": {
     "android:add": "cap add android",
     "sync": "cap sync android",
