@@ -1145,6 +1145,7 @@ body[data-global-theme="dayofdead"] .home-profile{background:radial-gradient(cir
 </nav>
 </div>
 <div id="modalRoot"></div>
+<script src="agenda-priority.js"></script>
 <script>
 const STORAGE_KEY='animeweek-tracker-v1';
 const PROFILE_KEY='animeweek-profile-v1';
@@ -2294,18 +2295,18 @@ function fillEveryAvailableSlot(proposal, sourceIds, behindIds=[]){
  const weeklyCounts={};const lastAssignedDay={};
  for(const day of days){for(const slot of proposal.schedule[day]||[]){if(!slot?.id)continue;weeklyCounts[slot.id]=(weeklyCounts[slot.id]||0)+1;lastAssignedDay[slot.id]=days.indexOf(day);}}
  const priorityFor=(token,dayIndex)=>{
-  if(token.isAiring)return 100000-(Number(token.ep)||0); // la recuperación de emisiones verificadas conserva prioridad
+  if(token.isAiring)return {manualScore:100000,score:100000-(Number(token.ep)||0)}; // emisión confirmada: prioridad absoluta
   const a=token.a||anime(token.id)||{};
-  const watched=Math.max(0,Number(a.watched)||0);
-  const total=Math.max(0,Number(proposal.animeUpdates?.[token.id]?.episodes)||Number(a.episodes)||Number(a.totalEpisodes)||0);
-  const progress=total>0?Math.min(1,watched/total):0;
-  const remaining=total>0?Math.max(0,total-watched):Infinity;
-  const completionBonus=remaining<=5?24:remaining<=12?16:remaining<=24?8:0;
-  const frequencyPenalty=(weeklyCounts[token.id]||0)*19;
-  const consecutivePenalty=lastAssignedDay[token.id]===dayIndex-1?9:0;
-  const freshnessBonus=lastAssignedDay[token.id]===undefined?7:0;
-  // Progreso avanzado tiene ventaja, pero la penalización por frecuencia mantiene variedad.
-  return progress*58+Math.min(watched,100)*0.12+completionBonus-frequencyPenalty-consecutivePenalty+freshnessBonus;
+  const effectiveAnime={...a,episodes:Math.max(0,Number(proposal.animeUpdates?.[token.id]?.episodes)||Number(a.episodes)||Number(a.totalEpisodes)||0)};
+  const engine=window.AgendaPriorityEngine;
+  if(!engine||typeof engine.calculatePriorityScore!=='function')throw new Error('No se pudo cargar el motor de prioridades de agenda.');
+  const base=engine.calculatePriorityScore(effectiveAnime);
+  const frequencyPenalty=Math.min(12,(weeklyCounts[token.id]||0)*4);
+  const consecutivePenalty=lastAssignedDay[token.id]===dayIndex-1?4:0;
+  const freshnessBonus=lastAssignedDay[token.id]===undefined?2:0;
+  // La prioridad manual se compara primero y no puede ser anulada por variedad.
+  // Dentro del mismo nivel, progreso (30%) y variedad deciden el orden.
+  return {manualScore:base.manualScore,score:base.progressScore-frequencyPenalty-consecutivePenalty+freshnessBonus};
  };
  for(const day of days){
   proposal.schedule[day]=proposal.schedule[day]||[];
@@ -2321,10 +2322,10 @@ function fillEveryAvailableSlot(proposal, sourceIds, behindIds=[]){
      // Los episodios atrasados deben ir antes del próximo capítulo, nunca después de él.
      if(anchorIndex>=0&&dayIndex>=anchorIndex)continue;
     }
-    candidates.push({index:i,token:t,score:priorityFor(t,dayIndex)});
+    candidates.push({index:i,token:t,priority:priorityFor(t,dayIndex)});
    }
    if(!candidates.length)break;
-   candidates.sort((x,y)=>y.score-x.score||x.token.ep-y.token.ep||x.token.order-y.token.order);
+   candidates.sort((x,y)=>y.priority.manualScore-x.priority.manualScore||y.priority.score-x.priority.score||x.token.ep-y.token.ep||x.token.order-y.token.order);
    const chosen=candidates[0],token=tokens.splice(chosen.index,1)[0],slot={id:token.id,ep:`Episodio ${token.ep}`};
    proposal.schedule[day].push(slot);
    weeklyCounts[token.id]=(weeklyCounts[token.id]||0)+1;lastAssignedDay[token.id]=dayIndex;
