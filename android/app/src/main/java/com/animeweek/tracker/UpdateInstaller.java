@@ -1,5 +1,6 @@
 package com.animeweek.tracker;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -130,6 +131,62 @@ public final class UpdateInstaller {
         } catch (Exception error) {
             android.util.Log.w("AnimeWeekUpdate", "No se pudo cambiar el icono de lanzamiento para el tema " + theme, error);
         }
+    }
+
+    public static final int REQUEST_POST_NOTIFICATIONS = 9531;
+
+    @JavascriptInterface
+    public boolean areUpdateNotificationsEnabled() {
+        boolean enabled = activity.getSharedPreferences(
+                UpdateCheckWorker.PREFS_NAME, Context.MODE_PRIVATE
+        ).getBoolean(UpdateCheckWorker.KEY_ENABLED, false);
+        if (!enabled) return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return activity.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                    == PackageManager.PERMISSION_GRANTED;
+        }
+        return true;
+    }
+
+    @JavascriptInterface
+    public void enableUpdateNotifications() {
+        mainHandler.post(() -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                    activity.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                            != PackageManager.PERMISSION_GRANTED) {
+                activity.requestPermissions(
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        REQUEST_POST_NOTIFICATIONS
+                );
+                return;
+            }
+            scheduleUpdateNotifications();
+        });
+    }
+
+    @JavascriptInterface
+    public void disableUpdateNotifications() {
+        mainHandler.post(() -> {
+            UpdateCheckWorker.cancel(activity);
+            notifyWeb("notifications-disabled", "Los avisos automáticos de actualizaciones están desactivados.");
+        });
+    }
+
+    public void onNotificationPermissionResult(boolean granted) {
+        if (granted) {
+            scheduleUpdateNotifications();
+        } else {
+            notifyWeb("notifications-denied",
+                    "No se concedió el permiso. Puedes activarlo después desde los ajustes de Android.");
+        }
+    }
+
+    private void scheduleUpdateNotifications() {
+        activity.getSharedPreferences(UpdateCheckWorker.PREFS_NAME, Context.MODE_PRIVATE)
+                .edit().putBoolean(UpdateCheckWorker.KEY_ENABLED, true).apply();
+        UpdateCheckWorker.schedule(activity);
+        notifyWeb("notifications-enabled",
+                "Avisos activados. Revisaremos GitHub ahora y después aproximadamente cada 12 horas.");
     }
 
     @JavascriptInterface
