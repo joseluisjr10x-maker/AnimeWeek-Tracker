@@ -1,4 +1,4 @@
-/* AnimeWeek Tracker — GitHub update center, v95.30.1 */
+/* AnimeWeek Tracker — GitHub update center, v95.30.2 */
 (function installAnimeWeekUpdateCenter() {
   'use strict';
   if (window.__animeWeekUpdateCenterInstalled) return;
