@@ -2220,6 +2220,62 @@ function normalizeNonAiringSlots(proposal, sourceIds, days){
   }
  }
 }
+function proposalMarksFinished(proposal,id,a){
+ return (proposal?.finished||[]).some(item=>typeof item==='string'?item===a?.title:(item?.id===id||(!item?.id&&item?.title===a?.title)));
+}
+function prepareAgendaRedistribution(proposal,sourceIds,days){
+ const before=[];
+ for(const day of days)for(const slot of proposal.schedule?.[day]||[])if(slot?.id)before.push({id:slot.id,day,ep:slot.ep||'',slot:{...slot}});
+ const anchorIds=new Set();
+ for(const id of sourceIds||[]){
+  const info=proposal.airingInfo?.[id];if(!info||!(Number(info.nextEpisode)>0)||!info.targetDay)continue;
+  const anchor=(proposal.schedule?.[info.targetDay]||[]).some(slot=>slot?.id===id&&slotEpisodeNumber(slot)===Number(info.nextEpisode));
+  if(anchor)anchorIds.add(id);
+ }
+ const fallbackKept=new Set(),stats={redistributed:0,protected:0,fallback:0};
+ for(const day of days){
+  const kept=[];
+  for(const slot of proposal.schedule?.[day]||[]){
+   if(!slot?.id){continue;}
+   const id=slot.id,a=anime(id);if(!a){kept.push(slot);continue;}
+   const info=proposal.airingInfo?.[id],done=!!proposal.doneEpisodeKeys?.[`${id}|${slot.ep||''}`];
+   const fixed=isWeeklyFixedAnime(a)||isSpecialExtra(id);
+   const confirmedAnchor=anchorIds.has(id)&&info?.targetDay===day&&slotEpisodeNumber(slot)===Number(info.nextEpisode);
+   const unanchoredAiring=!!info&&!anchorIds.has(id);
+   const unconfirmedAiring=!info&&(proposal.animeUpdates?.[id]?.status||a.status)==='airing';
+   const status=proposal.animeUpdates?.[id]?.status||a.status;
+   const total=Math.max(0,Number(proposal.animeUpdates?.[id]?.episodes)||Number(a.episodes)||Number(a.totalEpisodes)||0);
+   const finished=proposalMarksFinished(proposal,id,a);
+   let preserve=fixed||done||confirmedAnchor||unanchoredAiring||unconfirmedAiring;
+   if(!preserve&&(status==='completed'||status==='paused'||finished||total<=0)){
+    if(!fallbackKept.has(id)){preserve=true;fallbackKept.add(id);stats.fallback++;}
+   }
+   if(preserve){kept.push(slot);stats.protected++;}
+   else stats.redistributed++;
+  }
+  proposal.schedule[day]=kept;
+ }
+ proposal.redistributionSnapshot=before;
+ proposal.redistributionStats=stats;
+ return proposal;
+}
+function summarizeAgendaRedistribution(proposal,days){
+ const before=proposal.redistributionSnapshot||[],used=new Set(),moved=[];
+ const oldByKey=new Map();
+ for(const item of before){
+  const n=slotEpisodeNumber(item.slot),key=`${item.id}|${n||item.ep}`;
+  if(!oldByKey.has(key))oldByKey.set(key,[]);
+  oldByKey.get(key).push(item);
+ }
+ for(const day of days)for(const slot of proposal.schedule?.[day]||[]){
+  if(!slot?.id)continue;
+  const n=slotEpisodeNumber(slot),key=`${slot.id}|${n||slot.ep||''}`,matches=oldByKey.get(key)||[];
+  const prior=matches.find((item,index)=>!used.has(item));
+  if(prior){used.add(prior);if(prior.day!==day)moved.push({id:slot.id,title:anime(slot.id)?.title||slot.id,ep:slot.ep||'',from:prior.day,to:day,reason:'Redistribución según prioridad, continuidad y equilibrio semanal'});}
+ }
+ proposal.rebalancedAssignments=moved;
+ return proposal;
+}
 function fillEveryAvailableSlot(proposal, sourceIds, behindIds=[]){
  const days=['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
  const capacities=getAgendaCapacities();
@@ -2245,7 +2301,7 @@ function fillEveryAvailableSlot(proposal, sourceIds, behindIds=[]){
  normalizeNonAiringSlots(proposal,sourceIds,days);
  const confirmedBehind=new Set(behindIds||[]),ids=[...new Set((sourceIds||[]).filter(Boolean))],tokens=[];
  for(let order=0;order<ids.length;order++){
-  const id=ids[order],a=anime(id),effectiveStatus=proposal.animeUpdates?.[id]?.status||a?.status;if(!a||isWeeklyFixedAnime(a)||isSpecialExtra(id)||effectiveStatus==='completed'||effectiveStatus==='paused')continue;
+  const id=ids[order],a=anime(id),effectiveStatus=proposal.animeUpdates?.[id]?.status||a?.status;if(!a||isWeeklyFixedAnime(a)||isSpecialExtra(id)||effectiveStatus==='completed'||effectiveStatus==='paused'||proposalMarksFinished(proposal,id,a))continue;
   const watched=Math.max(0,Number(a.watched)||0),info=proposal.airingInfo?.[id];
   const isConfirmedAiring=!!info;
   const used=new Set();
@@ -2282,8 +2338,10 @@ function fillEveryAvailableSlot(proposal, sourceIds, behindIds=[]){
   const frequencyPenalty=(weeklyCounts[token.id]||0)*(continuityEnabled?19:7);
   const consecutivePenalty=lastAssignedDay[token.id]===dayIndex-1?9:0;
   const freshnessBonus=lastAssignedDay[token.id]===undefined?7:0;
-  // Progreso avanzado tiene ventaja, pero la penalización por frecuencia mantiene variedad.
-  return manualPriority+progress*58+Math.min(watched,100)*0.12+completionBonus-frequencyPenalty-consecutivePenalty+freshnessBonus;
+  const firstAssignmentBonus=(weeklyCounts[token.id]||0)===0?10000:0;
+  // Cada anime redistribuible recibe primero una oportunidad semanal; después mandan prioridad,
+  // progreso, cercanía al final y continuidad/frecuencia configuradas en Gestionar agenda.
+  return firstAssignmentBonus+manualPriority+progress*58+Math.min(watched,100)*0.12+completionBonus-frequencyPenalty-consecutivePenalty+freshnessBonus;
  };
  for(const day of days){
   proposal.schedule[day]=proposal.schedule[day]||[];
@@ -2309,8 +2367,10 @@ function fillEveryAvailableSlot(proposal, sourceIds, behindIds=[]){
    weeklyCounts[token.id]=(weeklyCounts[token.id]||0)+1;lastAssignedDay[token.id]=dayIndex;
    const a=token.a||anime(token.id)||{},total=Math.max(0,Number(proposal.animeUpdates?.[token.id]?.episodes)||Number(a.episodes)||Number(a.totalEpisodes)||0),watched=Math.max(0,Number(a.watched)||0);
    const progressLabel=total?`${Math.round(Math.min(1,watched/total)*100)}% de progreso`:'progreso registrado';
-   const reason=token.isAiring?token.reason:`${token.reason} · prioridad por ${progressLabel}${total&&total-watched<=12?' y cercanía al final':''}`;
-   proposal.filledSlots.push({id:token.id,title:token.a.title,day,ep:slot.ep,reason,priorityScore:Math.round(chosen.score)});
+   const priorityLabel=token.a.agendaPriority==='high'?'manual alta':token.a.agendaPriority==='low'?'manual baja':'manual normal';
+   const continuityLabel=token.a.agendaContinuity===false?'continuidad flexible':'secuencia y frecuencia distribuidas';
+   const reason=token.isAiring?token.reason:`${token.reason} · ${priorityLabel} · ${progressLabel}${total&&total-watched<=12?' y cercanía al final':''} · ${continuityLabel}`;
+   proposal.filledSlots.push({id:token.id,title:token.a.title,day,ep:slot.ep,reason,priorityScore:Math.round(chosen.score),manualPriority:token.a.agendaPriority||'normal',continuity:token.a.agendaContinuity!==false});
   }
  }
  proposal.emptySlots=days.reduce((sum,day)=>sum+Math.max(0,capacities[day]-(proposal.schedule[day]||[]).length),0);
@@ -2495,8 +2555,14 @@ async function previewWeeklyRenewal(manual=false){
   // Promover solo después de fijar emisiones y restaurar la agenda previa. Las promociones
   // usan capacidad real libre y jamás sustituyen un slot ocupado.
   promoteWaitlistIntoProposal(proposal,data.waitlist||[],getAgendaCapacities());
-  // Completa los huecos restantes con animes que ya pertenecen a esta semana.
-  fillEveryAvailableSlot(proposal,[...weeklySourceIds,...Object.values(proposal.schedule).flat().map(slot=>slot?.id).filter(Boolean)],proposal.behindAiringIds);
+  // Restituye una ubicación de seguridad para cada título anterior antes de redistribuir.
+  // Los slots vistos, fijos y emisiones confirmadas quedan protegidos; los demás se recalculan.
+  restoreRequiredAgendaAssignments(proposal,proposal.requiredAgendaAssignments);
+  const renewalRedistributionIds=[...new Set([...weeklySourceIds,...Object.values(proposal.schedule).flat().map(slot=>slot?.id).filter(Boolean)])];
+  prepareAgendaRedistribution(proposal,renewalRedistributionIds,['lunes','martes','miércoles','jueves','viernes','sábado','domingo']);
+  // Redistribuye todos los espacios futuros/no protegidos según los criterios de Gestionar agenda.
+  fillEveryAvailableSlot(proposal,renewalRedistributionIds,proposal.behindAiringIds);
+  summarizeAgendaRedistribution(proposal,['lunes','martes','miércoles','jueves','viernes','sábado','domingo']);
   // Segunda comprobación tras rellenar huecos: no se permite que la normalización deje
   // un título previamente asignado sin ninguna ubicación.
   restoreMissingWeeklyAssignments(proposal,proposal.protectedAssignments);
@@ -2515,7 +2581,7 @@ async function previewWeeklyRenewal(manual=false){
   const finishedRows=proposal.finished.map(t=>`<li>${esc(t)}: AniList lo marca como finalizado. No cambiaremos su estado automáticamente.</li>`).join('');
   const conflictRows=proposal.dayConflicts.map(x=>`<li><b>${esc(anime(x.id)?.title||x.id)}</b>: no se movió a ${esc(x.to)} porque el día alcanzó su capacidad.</li>`).join('');
   const unmatchedRows=proposal.unmatched.map(t=>`<li>${esc(t)}: se conserva su ubicación actual porque no se confirmó el horario.</li>`).join('');
-  modal(`<h2>🔄 Previsualización de renovación semanal</h2><p>Semana propuesta: <b>${esc(proposal.weekKey)}</b>. Revisa los cambios antes de aplicarlos.</p><div class="panel"><b>Progreso protegido</b><p>Los contadores de episodios vistos no cambiarán. Solo se reinicia el estado visual de “visto” de los espacios de la semana anterior.</p></div><h3>Agenda propuesta por día</h3>${dayPlanRows}<h3>📅 Cambios de día por emisión (${proposal.dayMoves.length})</h3>${moveRows?`<ul>${moveRows}</ul>`:'<p>No se propusieron movimientos de día.</p>'}${conflictRows?`<h3>Conflictos de capacidad</h3><ul>${conflictRows}</ul>`:''}<h3>Etiquetas de episodios actualizadas (${proposal.updates.length})</h3>${updateRows?`<ul>${updateRows}</ul>`:'<p>Sin cambios de etiquetas.</p>'}<h3>Espacios liberados por episodios vistos (${proposal.removed.length})</h3>${removeRows?`<ul>${removeRows}</ul>`:'<p>Ninguno.</p>'}<h3>Promoción desde lista de espera (${proposal.promoted.length})</h3>${promoteRows?`<ul>${promoteRows}</ul>`:'<p>No se promovieron títulos.</p>'}${proposal.restoredAssignments?.length?`<h3>🛡️ Asignaciones recuperadas (${proposal.restoredAssignments.length})</h3><ul>${proposal.restoredAssignments.map(x=>`<li><b>${esc(x.title)}</b> · ${esc(x.day)} — ${esc(x.reason)}</li>`).join('')}</ul>`:''}<div class="panel"><b>Integridad agenda / biblioteca</b><p>${proposal.integrityErrors?.length?`<span style="color:var(--danger)">No se puede aplicar: ${proposal.integrityErrors.map(esc).join(' · ')}</span>`:'<span style="color:var(--success)">Correcta: los animes asignados existen en la biblioteca y ninguno queda simultáneamente en espera.</span>'}</p></div><h3>🧠 Criterio de prioridad</h3><p>Emisión confirmada primero; después progreso acumulado, cercanía al final y frecuencia semanal. La puntuación se recalcula después de cada asignación para equilibrar avance y variedad.</p><h3>🧩 Huecos rellenados (${(proposal.filledSlots||[]).length})</h3>${renewalFilledRows?`<ul>${renewalFilledRows}</ul>`:'<p>No se añadieron capítulos pendientes.</p>'}<p><b>Espacios principales aún vacíos:</b> ${proposal.emptySlots??'—'}</p><h3>🎲 Variedad semanal ${proposal.shuffleEnabled?'activada':'desactivada'} · ${proposal.shuffledMoves.length} cambios</h3>${proposal.shuffleEnabled?(proposal.shuffledMoves.length?`<ul>${proposal.shuffledMoves.map(m=>`<li><b>${esc(anime(m.id)?.title||m.id)}</b>: ${esc(m.from)} → <b>${esc(m.to)}</b></li>`).join('')}</ul>`:'<p>No hay suficientes animes libres para variar.</p>'):'<p>La variedad está desactivada en Ajustes y reglas.</p>'}<p><b>Seguirán en espera:</b> ${proposal.waitlist.length}</p>${unmatchedRows?`<h3>Horarios no confirmados</h3><ul>${unmatchedRows}</ul>`:''}${finishedRows?`<h3>Posibles finalizados</h3><ul>${finishedRows}</ul>`:''}<div class="modal-actions"><button class="subtle" onclick="closeModal()">Cancelar</button><button class="primary" onclick="applyWeeklyRenewal()" ${proposal.integrityErrors?.length?'disabled':''}>Confirmar y renovar semana</button></div>`);
+  modal(`<h2>🔄 Previsualización de renovación semanal</h2><p>Semana propuesta: <b>${esc(proposal.weekKey)}</b>. Revisa los cambios antes de aplicarlos.</p><div class="panel"><b>Progreso protegido</b><p>Los contadores de episodios vistos no cambiarán. Solo se reinicia el estado visual de “visto” de los espacios de la semana anterior.</p></div><h3>Agenda propuesta por día</h3>${dayPlanRows}<h3>📅 Cambios de día por emisión (${proposal.dayMoves.length})</h3>${moveRows?`<ul>${moveRows}</ul>`:'<p>No se propusieron movimientos de día.</p>'}${conflictRows?`<h3>Conflictos de capacidad</h3><ul>${conflictRows}</ul>`:''}<h3>Etiquetas de episodios actualizadas (${proposal.updates.length})</h3>${updateRows?`<ul>${updateRows}</ul>`:'<p>Sin cambios de etiquetas.</p>'}<h3>Espacios liberados por episodios vistos (${proposal.removed.length})</h3>${removeRows?`<ul>${removeRows}</ul>`:'<p>Ninguno.</p>'}<h3>Promoción desde lista de espera (${proposal.promoted.length})</h3>${promoteRows?`<ul>${promoteRows}</ul>`:'<p>No se promovieron títulos.</p>'}${proposal.restoredAssignments?.length?`<h3>🛡️ Asignaciones recuperadas (${proposal.restoredAssignments.length})</h3><ul>${proposal.restoredAssignments.map(x=>`<li><b>${esc(x.title)}</b> · ${esc(x.day)} — ${esc(x.reason)}</li>`).join('')}</ul>`:''}<div class="panel"><b>Integridad agenda / biblioteca</b><p>${proposal.integrityErrors?.length?`<span style="color:var(--danger)">No se puede aplicar: ${proposal.integrityErrors.map(esc).join(' · ')}</span>`:'<span style="color:var(--success)">Correcta: los animes asignados existen en la biblioteca y ninguno queda simultáneamente en espera.</span>'}</p></div><h3>🔁 Asignaciones redistribuidas (${(proposal.rebalancedAssignments||[]).length})</h3>${proposal.rebalancedAssignments?.length?`<ul>${proposal.rebalancedAssignments.map(x=>`<li><b>${esc(x.title)}</b>: ${esc(x.ep)} · ${esc(x.from)} → <b>${esc(x.to)}</b></li>`).join('')}</ul>`:'<p>Las asignaciones protegidas se conservaron; no hubo cambios de día para episodios ya existentes.</p>}<h3>🧠 Criterio de prioridad</h3><p>Primero se garantiza una aparición semanal por cada anime asignado; después influyen la prioridad manual, progreso, cercanía al final y la continuidad/frecuencia elegidas. Emisiones confirmadas y episodios vistos no se redistribuyen.</p><h3>🧩 Huecos rellenados (${(proposal.filledSlots||[]).length})</h3>${renewalFilledRows?`<ul>${renewalFilledRows}</ul>`:'<p>No se añadieron capítulos pendientes.</p>'}<p><b>Espacios principales aún vacíos:</b> ${proposal.emptySlots??'—'}</p><h3>🎲 Variedad semanal ${proposal.shuffleEnabled?'activada':'desactivada'} · ${proposal.shuffledMoves.length} cambios</h3>${proposal.shuffleEnabled?(proposal.shuffledMoves.length?`<ul>${proposal.shuffledMoves.map(m=>`<li><b>${esc(anime(m.id)?.title||m.id)}</b>: ${esc(m.from)} → <b>${esc(m.to)}</b></li>`).join('')}</ul>`:'<p>No hay suficientes animes libres para variar.</p>'):'<p>La variedad está desactivada en Ajustes y reglas.</p>'}<p><b>Seguirán en espera:</b> ${proposal.waitlist.length}</p>${unmatchedRows?`<h3>Horarios no confirmados</h3><ul>${unmatchedRows}</ul>`:''}${finishedRows?`<h3>Posibles finalizados</h3><ul>${finishedRows}</ul>`:''}<div class="modal-actions"><button class="subtle" onclick="closeModal()">Cancelar</button><button class="primary" onclick="applyWeeklyRenewal()" ${proposal.integrityErrors?.length?'disabled':''}>Confirmar y renovar semana</button></div>`);
   if(status)status.textContent=`Previsualización lista para ${proposal.weekKey}. No se aplicó ningún cambio todavía.`;
  }catch(err){if(status)status.textContent=`No se pudo consultar AniList: ${err.message||'error de conexión'}. Tu agenda y progreso siguen intactos.`;if(manual)alert(`No se pudo consultar AniList. No se cambió tu agenda.\n\n${err.message||'Comprueba tu conexión e inténtalo de nuevo.'}`)}
  finally{if(button){button.disabled=false;button.textContent='🔄 Revisar nueva semana'}}
@@ -2621,13 +2687,15 @@ async function previewWeeklyReorganization(){
    }
    proposal.schedule[day]=kept;
   }
-  // Completar todos los espacios disponibles con animes de la semana: no emitidos primero y
-  // episodios atrasados confirmados de los que siguen en emisión.
+  // Redistribuir todas las asignaciones futuras no protegidas, no solo los huecos vacíos.
+  // Se conservan episodios vistos, anclajes AniList, fijos y títulos sin datos suficientes.
+  prepareAgendaRedistribution(proposal,ids,days);
   fillEveryAvailableSlot(proposal,ids,proposal.behindAiringIds);
+  summarizeAgendaRedistribution(proposal,days);
   restoreRequiredAgendaAssignments(proposal,proposal.requiredAgendaAssignments);
   proposal.integrityErrors=validateAgendaInvariant(proposal,proposal.requiredAgendaAssignments);
   if(proposal.integrityErrors.length)throw new Error('La propuesta no conserva todos los animes de la agenda. No se aplicará ningún cambio. '+proposal.integrityErrors.join(' '));
-  proposal.changed=proposal.dayMoves.length+proposal.updates.length+proposal.filledSlots.length+proposal.duplicateSlotsRemoved.length+(proposal.restoredAssignments?.length||0);proposal.diagnostics.behindTitles=proposal.behindAiringIds.length;proposal.diagnostics.filledAiringBacklog=proposal.filledSlots.filter(x=>String(x.reason||'').includes('emitido')||String(x.reason||'').includes('emisión')).length;
+  proposal.changed=proposal.dayMoves.length+proposal.updates.length+proposal.filledSlots.length+proposal.duplicateSlotsRemoved.length+(proposal.restoredAssignments?.length||0)+(proposal.rebalancedAssignments?.length||0);proposal.diagnostics.behindTitles=proposal.behindAiringIds.length;proposal.diagnostics.filledAiringBacklog=proposal.filledSlots.filter(x=>String(x.reason||'').includes('emitido')||String(x.reason||'').includes('emisión')).length;
   window.__weeklyReorganizationProposal=proposal;
   const plan=days.map(day=>{const items=(proposal.schedule[day]||[]).map(slot=>{const a=anime(slot.id);return `<li>${esc(a?.title||'Espacio vacío')} <span style="color:var(--muted)">· ${esc(slot.ep||'Sin etiqueta')}</span>${proposal.dayMoves.some(m=>m.id===slot.id&&m.to===day)?' <b style="color:var(--success)">· Movido aquí</b>':''}</li>`}).join('');return `<div class="panel" style="margin:8px 0"><h4 style="margin:0 0 6px">${esc(day[0].toUpperCase()+day.slice(1))} (${(proposal.schedule[day]||[]).length}/${capacities[day]})</h4>${items?`<ul>${items}</ul>`:'<p style="color:var(--muted)">Sin espacios principales.</p>'}</div>`}).join('');
   const moveRows=proposal.dayMoves.map(m=>`<li><b>${esc(m.title)}</b>: ${esc(m.from)} → <b>${esc(m.to)}</b> <span style="color:var(--muted)">· ${esc(m.reason)}</span></li>`).join('');
@@ -2636,17 +2704,17 @@ async function previewWeeklyReorganization(){
   const unmatchedRows=proposal.unmatched.map(u=>`<li><b>${esc(u.title)}</b>: ${esc(u.reason)}</li>`).join('');
   const finishedRows=proposal.finished.map(a=>`<li><b>${esc(a.title)}</b>: AniList lo marca como finalizado. No se cambiará su estado automáticamente.</li>`).join('');
   const filledRows=proposal.filledSlots.map(x=>`<li><b>${esc(x.title)}</b>: ${esc(x.day)} · ${esc(x.ep)} <span style="color:var(--muted)">· ${esc(x.reason)}</span></li>`).join('');
-  modal(`<h2>🧭 Reorganizar semana actual</h2><p>Esto corrige la agenda que estás usando ahora. No renueva la semana ni incorpora títulos de la lista de espera. Los episodios de emisión ya publicados conservan prioridad. Después, los huecos se asignan con una puntuación dinámica que considera progreso, cercanía al final y frecuencia semanal para equilibrar avance y variedad. Un anime nunca aparece dos veces el mismo día.</p><div class="panel"><b>Progreso protegido</b><p>Los contadores de episodios y las marcas de visto se conservarán asociadas a cada anime, incluso si cambia de día.</p></div><h3>🔎 Diagnóstico de horarios AniList</h3><div class="panel"><p>Filas cargadas en calendario: <b>${proposal.diagnostics.calendarRows}</b> · Coincidencias de calendario: <b>${proposal.diagnostics.calendarMatched}</b> · Fichas individuales consultadas correctamente: <b>${proposal.diagnostics.detailMatched}</b> · Reconocidos solo por calendario: <b>${proposal.diagnostics.calendarOnly}</b> · Sin coincidencia: <b>${proposal.diagnostics.unknown}</b></p>${proposal.diagnostics.calendarError?`<p style="color:var(--danger)">No se pudo actualizar el calendario: ${esc(proposal.diagnostics.calendarError)}. Se usó la caché disponible si existía.</p>`:''}${airingCalendarLastSuccessAt?`<p>Última actualización correcta: ${esc(new Date(airingCalendarLastSuccessAt).toLocaleString())}.</p>`:''}<p>Los títulos reconocidos por el calendario tienen prioridad aunque la ficha individual falle.</p></div><h3>Agenda propuesta por día</h3>${plan}<h3>📅 Cambios de día (${proposal.dayMoves.length})</h3>${moveRows?`<ul>${moveRows}</ul>`:'<p>No hay movimientos de día confirmados.</p>'}<h3>Etiquetas de episodio (${proposal.updates.length})</h3>${updateRows?`<ul>${updateRows}</ul>`:'<p>No hay etiquetas que actualizar.</p>'}${conflictRows?`<h3>⚠️ Conflictos de capacidad</h3><ul>${conflictRows}</ul>`:''}${unmatchedRows?`<h3>Horarios no confirmados (${proposal.unmatched.length})</h3><ul>${unmatchedRows}</ul>`:''}${finishedRows?`<h3>Animes finalizados</h3><ul>${finishedRows}</ul>`:''}<h3>🧠 Criterio del organizador</h3><p>Emisión confirmada primero; después progreso acumulado, cercanía al final y frecuencia semanal. La puntuación se recalcula después de cada asignación para evitar repeticiones excesivas.</p><h3>🎬 Huecos rellenados / episodios de recuperación (${proposal.filledSlots.length})</h3>${filledRows?`<ul>${filledRows}</ul>`:'<p>No se añadieron capítulos pendientes.</p>'}<p><b>Espacios principales aún vacíos:</b> ${proposal.emptySlots??'—'}</p>${proposal.duplicateSlotsRemoved.length?`<h3>Duplicados del mismo día corregidos (${proposal.duplicateSlotsRemoved.length})</h3><ul>${proposal.duplicateSlotsRemoved.map(x=>`<li><b>${esc(x.title)}</b>: ${esc(x.day)} · se quitó la segunda asignación (${esc(x.ep||'sin etiqueta')}).</li>`).join('')}</ul>`:''}<div class="modal-actions"><button class="subtle" onclick="closeModal()">Cancelar</button><button class="primary" onclick="applyWeeklyReorganization()" ${proposal.changed===0?'disabled':''}>Aplicar reorganización</button></div>`);
+  modal(`<h2>🧭 Reorganizar semana actual</h2><p>Esto corrige la agenda que estás usando ahora. No renueva la semana ni incorpora títulos de la lista de espera. Los episodios de emisión ya publicados conservan prioridad. Después, los huecos se asignan con una puntuación dinámica que considera progreso, cercanía al final y frecuencia semanal para equilibrar avance y variedad. Un anime nunca aparece dos veces el mismo día.</p><div class="panel"><b>Progreso protegido</b><p>Los contadores de episodios y las marcas de visto se conservarán asociadas a cada anime, incluso si cambia de día.</p></div><h3>🔎 Diagnóstico de horarios AniList</h3><div class="panel"><p>Filas cargadas en calendario: <b>${proposal.diagnostics.calendarRows}</b> · Coincidencias de calendario: <b>${proposal.diagnostics.calendarMatched}</b> · Fichas individuales consultadas correctamente: <b>${proposal.diagnostics.detailMatched}</b> · Reconocidos solo por calendario: <b>${proposal.diagnostics.calendarOnly}</b> · Sin coincidencia: <b>${proposal.diagnostics.unknown}</b></p>${proposal.diagnostics.calendarError?`<p style="color:var(--danger)">No se pudo actualizar el calendario: ${esc(proposal.diagnostics.calendarError)}. Se usó la caché disponible si existía.</p>`:''}${airingCalendarLastSuccessAt?`<p>Última actualización correcta: ${esc(new Date(airingCalendarLastSuccessAt).toLocaleString())}.</p>`:''}<p>Los títulos reconocidos por el calendario tienen prioridad aunque la ficha individual falle.</p></div><h3>Agenda propuesta por día</h3>${plan}<h3>📅 Cambios de día (${proposal.dayMoves.length})</h3>${moveRows?`<ul>${moveRows}</ul>`:'<p>No hay movimientos de día confirmados.</p>'}<h3>Etiquetas de episodio (${proposal.updates.length})</h3>${updateRows?`<ul>${updateRows}</ul>`:'<p>No hay etiquetas que actualizar.</p>'}${conflictRows?`<h3>⚠️ Conflictos de capacidad</h3><ul>${conflictRows}</ul>`:''}${unmatchedRows?`<h3>Horarios no confirmados (${proposal.unmatched.length})</h3><ul>${unmatchedRows}</ul>`:''}${finishedRows?`<h3>Animes finalizados</h3><ul>${finishedRows}</ul>`:''}<h3>🔁 Asignaciones redistribuidas (${(proposal.rebalancedAssignments||[]).length})</h3>${proposal.rebalancedAssignments?.length?`<ul>${proposal.rebalancedAssignments.map(x=>`<li><b>${esc(x.title)}</b>: ${esc(x.ep)} · ${esc(x.from)} → <b>${esc(x.to)}</b></li>`).join('')}</ul>`:'<p>No se movieron episodios existentes fuera de los protegidos.</p>}<h3>🧠 Criterio del organizador</h3><p>Primero una aparición por anime; después prioridad manual, progreso, cercanía al final y continuidad/frecuencia. La emisión AniList y los episodios vistos permanecen protegidos. La previsualización indica la razón y puntuación de cada nuevo espacio.</p><h3>🎬 Huecos rellenados / episodios de recuperación (${proposal.filledSlots.length})</h3>${filledRows?`<ul>${filledRows}</ul>`:'<p>No se añadieron capítulos pendientes.</p>'}<p><b>Espacios principales aún vacíos:</b> ${proposal.emptySlots??'—'}</p>${proposal.duplicateSlotsRemoved.length?`<h3>Duplicados del mismo día corregidos (${proposal.duplicateSlotsRemoved.length})</h3><ul>${proposal.duplicateSlotsRemoved.map(x=>`<li><b>${esc(x.title)}</b>: ${esc(x.day)} · se quitó la segunda asignación (${esc(x.ep||'sin etiqueta')}).</li>`).join('')}</ul>`:''}<div class="modal-actions"><button class="subtle" onclick="closeModal()">Cancelar</button><button class="primary" onclick="applyWeeklyReorganization()" ${proposal.changed===0?'disabled':''}>Aplicar reorganización</button></div>`);
   if(status)status.textContent=`Previsualización de semana actual lista: ${proposal.dayMoves.length} movimientos, ${proposal.updates.length} etiquetas y ${proposal.filledSlots.length} huecos rellenados. No se aplicó ningún cambio.`;
  }catch(err){if(status)status.textContent=`No se pudo preparar la reorganización: ${err.message||'error desconocido'}. Tu agenda sigue intacta.`;alert(`No se pudo preparar la reorganización. Tu agenda sigue intacta.\n${err.message||''}`)}
  finally{if(button){button.disabled=false;button.textContent='🧭 Reorganizar semana actual'}}
 }
 function applyWeeklyReorganization(){
  const p=window.__weeklyReorganizationProposal;if(!p){closeModal();return;}
- const integrityErrors=validateAgendaInvariant(p,p.requiredAgendaAssignments||[]);
- if(integrityErrors.length){alert('No se puede aplicar la reorganización: se perderían animes de la agenda. No se modificó ningún dato.\\n\\n'+integrityErrors.join('\\n'));return;}
- if(!confirm(`¿Aplicar la reorganización de la semana actual? Se moverán ${p.dayMoves.length} asignaciones, se actualizarán ${p.updates.length} etiquetas y se rellenarán ${p.filledSlots?.length||0} espacios con episodios de animes que ya están en la semana. No se repetirá un anime en el mismo día. El progreso visto se conservará.`))return;
- const finalIntegrityErrors=validateAgendaInvariant(p,p.requiredAgendaAssignments||[]);
+ const integrityErrors=[...validateWeeklyProposal(p,[]),...validateAgendaInvariant(p,p.requiredAgendaAssignments||[])];
+ if(integrityErrors.length){alert('No se puede aplicar la reorganización: la propuesta no pasó la comprobación de integridad. No se modificó ningún dato.\\n\\n'+integrityErrors.join('\\n'));return;}
+ if(!confirm(`¿Aplicar la reorganización de la semana actual? Se moverán ${p.dayMoves.length} emisiones, se redistribuirán ${p.rebalancedAssignments?.length||0} asignaciones existentes, se actualizarán ${p.updates.length} etiquetas y se rellenarán ${p.filledSlots?.length||0} espacios. No se repetirá un anime en el mismo día. El progreso visto se conservará.`))return;
+ const finalIntegrityErrors=[...validateWeeklyProposal(p,[]),...validateAgendaInvariant(p,p.requiredAgendaAssignments||[])];
  if(finalIntegrityErrors.length){alert('La agenda cambió mientras se confirmaba la operación. No se guardó ningún cambio.\\n\\n'+finalIntegrityErrors.join('\\n'));return;}
  data.schedule=p.schedule;
  // Recalcula las marcas visuales por anime para que no se transfieran accidentalmente a otro slot.
@@ -2655,8 +2723,8 @@ function applyWeeklyReorganization(){
  data.doneSlots=nextDone;
  for(const [id,update] of Object.entries(p.animeUpdates||{})){const a=anime(id);if(a){if(update.status!==undefined)a.status=update.status;if(update.airingDay!==undefined)a.airingDay=update.airingDay;if(update.airingDetectedAt!==undefined)a.airingDetectedAt=update.airingDetectedAt;if(update.nextLabel!==undefined)a.nextLabel=update.nextLabel;if(Number(update.nextAiringAt)>0)a.nextAiringAt=Number(update.nextAiringAt);else if(update.nextAiringAt===0)delete a.nextAiringAt;if(Number(update.episodes)>0)a.episodes=Number(update.episodes);a.airingSource='AniList';}}
  save();closeModal();window.__weeklyReorganizationProposal=null;
- const status=document.getElementById('weeklyRefreshStatus');if(status){status.style.display='block';status.textContent=`Semana actual reorganizada. ${p.dayMoves.length} movimientos, ${p.updates.length} etiquetas y ${p.filledSlots?.length||0} espacios rellenados y ${p.duplicateSlotsRemoved?.length||0} duplicados del mismo día corregidos. Espacios aún vacíos: ${p.emptySlots??0}. No se renovó la semana ni se modificó la lista de espera.`}
- alert(`Reorganización aplicada.\nMovimientos: ${p.dayMoves.length}\nEtiquetas actualizadas: ${p.updates.length}\nEspacios rellenados: ${p.filledSlots?.length||0}\nDuplicados del mismo día corregidos: ${p.duplicateSlotsRemoved?.length||0}\nHorarios sin confirmar: ${p.unmatched.length}\n\nEl progreso visto se conservó.`);
+ const status=document.getElementById('weeklyRefreshStatus');if(status){status.style.display='block';status.textContent=`Semana actual reorganizada. ${p.rebalancedAssignments?.length||0} asignaciones redistribuidas, ${p.dayMoves.length} emisiones reubicadas, ${p.updates.length} etiquetas y ${p.filledSlots?.length||0} espacios rellenados; ${p.duplicateSlotsRemoved?.length||0} duplicados corregidos. Espacios aún vacíos: ${p.emptySlots??0}. No se renovó la semana ni se modificó la lista de espera.`}
+ alert(`Reorganización aplicada.\nEmisiones reubicadas: ${p.dayMoves.length}\nAsignaciones redistribuidas: ${p.rebalancedAssignments?.length||0}\nEtiquetas actualizadas: ${p.updates.length}\nEspacios rellenados: ${p.filledSlots?.length||0}\nDuplicados del mismo día corregidos: ${p.duplicateSlotsRemoved?.length||0}\nHorarios sin confirmar: ${p.unmatched.length}\n\nEl progreso visto se conservó.`);
 }
 
 // v94: no abrir ventanas modales automáticamente al iniciar. Una renovación pendiente
