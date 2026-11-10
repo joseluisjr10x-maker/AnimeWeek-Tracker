@@ -181,7 +181,7 @@ public final class UpdateCheckWorker extends Worker {
             NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_notification)
                     .setContentTitle("Nueva actualización disponible")
-                    .setContentText("AnimeWeek Tracker v" + version ya)
+                    .setContentText("AnimeWeek Tracker v" + version)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(
                             "Ya puedes actualizar AnimeWeek Tracker a la versión " + version +
                                     ". Abre la app y entra al Centro de actualizaciones."
