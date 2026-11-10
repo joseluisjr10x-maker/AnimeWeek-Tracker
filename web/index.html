@@ -4215,7 +4215,7 @@ body[data-global-theme="dayofdead"] .panel:after{content:none!important;display:
  }
  const current=document.body.dataset.globalTheme||'aurora';
  const brand=document.getElementById('appBrandLogoImage');
- if(brand){const path='theme-icons/'+current+'.svg';brand.src=path;}
+ if(brand){const path=festiveThemeAssets[current]||'assets/theme-icons/aurora.webp';brand.src=path;brand.alt='Logo de AnimeWeek Tracker · tema '+current;}
  render(current);
 })();
 </script>
@@ -4268,6 +4268,21 @@ body[data-global-theme] .view-heading h2{color:var(--text)!important}
 body[data-global-theme] input,
 body[data-global-theme] select,
 body[data-global-theme] textarea{accent-color:var(--theme-accent)}
+</style>
+<style id="v95-30-1-logo-edge-cleanup">
+/* Crop the extra dark rim baked into the original emblem art without changing the artwork. */
+.app-brand-logo{
+ position:relative!important;overflow:hidden!important;background:transparent!important;
+ border:0!important;outline:0!important;box-shadow:none!important;padding:0!important;
+ border-radius:19%!important;
+}
+.app-brand-logo img{
+ position:absolute!important;left:-6.5%!important;top:-6.5%!important;
+ width:113%!important;height:113%!important;max-width:none!important;max-height:none!important;
+ object-fit:cover!important;object-position:center!important;border:0!important;
+ border-radius:19%!important;box-shadow:none!important;
+}
+@media(max-width:700px){.app-topbar .app-brand-logo{overflow:hidden!important;background:transparent!important;box-shadow:none!important}}
 </style>
 </body>
 </html>
