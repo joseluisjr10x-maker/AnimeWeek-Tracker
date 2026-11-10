@@ -682,7 +682,7 @@ img{max-width:100%}
 <style id="animeweek-v74-polish">
 @media(max-width:700px){.side-rail{display:none!important}.app-shell{display:block!important}.mobile-bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr));padding:6px 5px calc(6px + env(safe-area-inset-bottom));gap:2px}.mobile-bottom-nav button{min-height:54px;font-size:9px;gap:3px}.mobile-bottom-nav .mobile-nav-profile .mobile-profile-avatar{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;overflow:hidden;border:2px solid #ff405d;background:linear-gradient(135deg,#ff405d,#a56cff);color:#fff;font-size:16px;box-shadow:0 0 0 3px rgba(255,64,93,.12)}.mobile-profile-avatar img{width:100%;height:100%;object-fit:cover}.mobile-bottom-nav .mobile-nav-profile.active .mobile-profile-avatar{border-color:#fff}#menuTrigger,.menu-trigger{display:none!important}.menu-pop{display:none!important}.week{display:flex!important;flex-direction:column!important;gap:22px!important}.week .day{min-width:0!important;display:block!important}.week .day .slot{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:center;margin:9px 0;padding:9px;border-radius:14px}.week .day .slot-cover{width:76px;height:100px;min-height:100px;border-radius:9px;overflow:hidden}.week .day .slot-cover img{width:100%;height:100%;object-fit:cover}.week .day .slot-copy{min-width:0}.week .day .slot-actions{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}.week .day .slot-actions button{flex:1;min-width:78px;font-size:11px;padding:8px 5px}.week-day-picker{display:flex;overflow-x:auto;gap:7px;padding-bottom:8px}.week-day-picker button{flex:0 0 auto}.library-top-actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:7px}.library-top-actions #addAnimeBtn2{grid-column:1/-1}.discover-utility-actions{display:flex;gap:7px;flex-wrap:wrap}.discover-utility-actions button{flex:1;font-size:11px}.discover-filter-toggle{width:100%;text-align:left}.agenda-rules-modal{max-height:70vh;overflow:auto}}
 @media(max-width:390px){.week .day .slot{grid-template-columns:64px minmax(0,1fr)}.week .day .slot-cover{width:64px;height:88px;min-height:88px}#discoverFiltersPanel .discover-filters{grid-template-columns:1fr}}
-.agenda-rules-modal p{font-size:13px;line-height:1.5;color:var(--muted)}.agenda-rule-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.agenda-rule-row>label:first-child{display:flex;align-items:center;gap:8px;text-transform:capitalize}.agenda-max-label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}.agenda-max-label input{width:72px;min-height:40px;padding:7px}
+.agenda-manage-row select{width:100%;margin-top:4px;min-height:38px}.agenda-manage-row input[type=checkbox]{width:18px;height:18px}.agenda-rules-modal p{font-size:13px;line-height:1.5;color:var(--muted)}.agenda-rule-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.agenda-rule-row>label:first-child{display:flex;align-items:center;gap:8px;text-transform:capitalize}.agenda-max-label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}.agenda-max-label input{width:72px;min-height:40px;padding:7px}
 </style><style id="animeweek-v74-agenda-horizontal">
 @media(max-width:700px){
  .agenda-poster-rail{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;padding:4px 2px 12px;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
@@ -1129,7 +1129,7 @@ body[data-global-theme="dayofdead"] .home-profile{background:radial-gradient(cir
   </section>
 </div>
 
-<div id="weekView" class="hidden"><div class="view-heading"><div><h2>Agenda completa</h2><p>Tu semana organizada de lunes a domingo.</p></div><span class="today-chip">Plan semanal</span></div><div class="notice">📌 Capacidad principal configurable por día desde ✎ Personalizar agenda. <b>Hajime no Ippo</b> es extra fijo lunes/miércoles; <b>Black Clover antiguo</b>, martes/jueves. Los extras opcionales solo aparecen el domingo. No adelantes episodios semanales.</div><div class="section-title"><div><h2>Agenda semanal</h2><p>Marca un episodio como visto para actualizar tu progreso; puedes desmarcarlo para revertir el último cambio compatible.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="subtle week-edit-btn" id="editWeekRulesBtn" type="button" title="Personalizar agenda" aria-label="Personalizar agenda">✎</button><button class="primary" id="reorganizeWeekBtn" type="button" >🧭 Reorganizar semana actual</button><button class="primary" id="weeklyRefreshBtn" type="button" >🔄 Revisar nueva semana</button><button class="subtle" id="resetWeekBtn">Restablecer agenda</button></div></div><div id="weeklyRefreshStatus" class="notice" style="display:none;margin-bottom:14px" role="status"></div><div id="weekDayPicker" class="week-day-picker" aria-label="Elegir día de la agenda"></div><div id="weekGrid" class="week"></div><div class="section-title"><div><h2>Extras fijos</h2><p>No cuentan dentro de los episodios principales.</p></div><button class="subtle" type="button" onclick="configureFixedExtras()">⚙ Configurar extras</button></div><div id="fixedGrid" class="fixed-extras"></div><div class="section-title"><div><h2>Extras opcionales · Domingo</h2><p>Solo si tienes tiempo y ganas.</p></div></div><div id="optionalGrid" class="optional-grid"></div><section class="panel random-extra-panel" style="margin:18px 0;padding:16px"><div class="section-title" style="margin:0 0 8px"><div><h2>🎲 ¿Un episodio extra?</h2><p>Cuando termines tus episodios del día, sortea un anime de tu biblioteca que no esté ya en la agenda de hoy ni en la lista de espera.</p></div><button class="primary" type="button" onclick="pickRandomExtraAnime()">Elegir al azar</button></div><div id="randomExtraResult" class="random-extra-result"><p style="color:var(--muted);margin:8px 0">Pulsa el botón y te recomendaré un anime al azar para continuar viendo.</p></div></section><div class="section-title"><div><h2>⏳ En espera para entrar a la agenda</h2><p>Los animes que esperan un espacio principal. Se incorporan automáticamente cuando liberes un lugar.</p></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="today-chip" id="waitlistCount">0 en espera</span><button class="primary" type="button" onclick="pickFivePendingToWaitlist()">🎲 Elegir 5 pendientes</button></div></div><div id="randomWaitlistStatus" class="notice" style="display:none;margin:8px 0" role="status"></div><div id="waitlistPanel" class="waitlist-panel"></div></div>
+<div id="weekView" class="hidden"><div class="view-heading"><div><h2>Agenda completa</h2><p>Tu semana organizada de lunes a domingo.</p></div><span class="today-chip">Plan semanal</span></div><div class="notice">📌 Capacidad principal configurable por día desde ✎ Personalizar agenda. <b>Hajime no Ippo</b> es extra fijo lunes/miércoles; <b>Black Clover antiguo</b>, martes/jueves. Los extras opcionales solo aparecen el domingo. No adelantes episodios semanales.</div><div class="section-title"><div><h2>Agenda semanal</h2><p>Marca un episodio como visto para actualizar tu progreso; puedes desmarcarlo para revertir el último cambio compatible.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="subtle week-edit-btn" id="editWeekRulesBtn" type="button" title="Personalizar agenda" aria-label="Personalizar agenda">✎</button><button class="subtle" id="manageAgendaBtn" type="button" onclick="openAgendaManager()">📋 Gestionar agenda</button><button class="primary" id="reorganizeWeekBtn" type="button" >🧭 Reorganizar semana actual</button><button class="primary" id="weeklyRefreshBtn" type="button" >🔄 Revisar nueva semana</button><button class="subtle" id="resetWeekBtn">Restablecer agenda</button></div></div><div id="weeklyRefreshStatus" class="notice" style="display:none;margin-bottom:14px" role="status"></div><div id="weekDayPicker" class="week-day-picker" aria-label="Elegir día de la agenda"></div><div id="weekGrid" class="week"></div><div class="section-title"><div><h2>Extras fijos</h2><p>No cuentan dentro de los episodios principales.</p></div><button class="subtle" type="button" onclick="configureFixedExtras()">⚙ Configurar extras</button></div><div id="fixedGrid" class="fixed-extras"></div><div class="section-title"><div><h2>Extras opcionales · Domingo</h2><p>Solo si tienes tiempo y ganas.</p></div></div><div id="optionalGrid" class="optional-grid"></div><section class="panel random-extra-panel" style="margin:18px 0;padding:16px"><div class="section-title" style="margin:0 0 8px"><div><h2>🎲 ¿Un episodio extra?</h2><p>Cuando termines tus episodios del día, sortea un anime de tu biblioteca que no esté ya en la agenda de hoy ni en la lista de espera.</p></div><button class="primary" type="button" onclick="pickRandomExtraAnime()">Elegir al azar</button></div><div id="randomExtraResult" class="random-extra-result"><p style="color:var(--muted);margin:8px 0">Pulsa el botón y te recomendaré un anime al azar para continuar viendo.</p></div></section><div class="section-title"><div><h2>⏳ En espera para entrar a la agenda</h2><p>Los animes que esperan un espacio principal. Se incorporan automáticamente cuando liberes un lugar.</p></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="today-chip" id="waitlistCount">0 en espera</span><button class="primary" type="button" onclick="pickFivePendingToWaitlist()">🎲 Elegir 5 pendientes</button></div></div><div id="randomWaitlistStatus" class="notice" style="display:none;margin:8px 0" role="status"></div><div id="waitlistPanel" class="waitlist-panel"></div></div>
 <div id="libraryView" class="hidden"><div class="view-heading"><div><h2>Mi biblioteca</h2><p>Tu colección personal, organizada visualmente.</p></div></div><div class="section-title"><div><h2>Tu colección</h2><p>Toca cualquier póster para ver detalles y acciones.</p></div><div class="library-top-actions"><button class="subtle" onclick="switchView('profile');setProfileTab('rankings')">🏆 Mis rankings</button><button class="subtle" onclick="openImportPicker('anilist')">⇧ Importar AniList</button><button class="subtle" onclick="openImportPicker('animeplanet')">⇧ Importar Anime-Planet</button><button class="primary" id="addAnimeBtn2">＋ Añadir anime</button></div></div><details class="library-collapsible library-summary-toggle"><summary><span>📊 Resumen de biblioteca</span><span class="collapse-hint">Mostrar estadísticas</span></summary><div class="library-summary-inner"><div class="library-summary" id="librarySummary" aria-live="polite"></div></div></details>
 <div class="toolbar library-toolbar"><input id="searchInput" placeholder="Buscar en tu colección…" aria-label="Buscar en mi biblioteca"><select id="filterSelect" aria-label="Filtrar por estado"><option value="all">Todos los estados</option><option value="watching">Viendo</option><option value="airing">En emisión</option><option value="planned">Pendientes</option><option value="completed">Completados</option><option value="paused">Pausados</option></select><select id="sortSelect" aria-label="Ordenar biblioteca"><option value="default">Orden original</option><option value="title-asc">Título A–Z</option><option value="title-desc">Título Z–A</option><option value="progress-desc">Más episodios vistos</option><option value="progress-asc">Menos episodios vistos</option><option value="status">Por estado</option><option value="score-desc">Mejor puntuación personal</option><option value="favorites">Favoritos primero</option></select><button class="subtle" id="clearLibraryFilters" type="button">Limpiar</button></div>
 <div id="libraryResultMeta" class="library-result-meta"></div><details class="library-collapsible library-bulk-toggle"><summary><span>☑️ Selección múltiple</span><span class="collapse-hint">Cambiar estado de varios animes</span></summary><div class="library-bulk-inner"><div class="v29-bulk-toolbar"><label><input type="checkbox" id="bulkSelectToggle" onchange="toggleBulkMode(this.checked)"> Activar selección</label><span id="bulkSelectedCount">0 seleccionados</span><div class="library-bulk-controls"><select id="bulkStatusSelect"><option value="">Cambiar estado a…</option><option value="watching">En progreso</option><option value="completed">Terminado</option><option value="planned">Pendiente</option><option value="paused">En pausa</option><option value="airing">En emisión</option></select><button class="primary" onclick="applyBulkStatus()">Aplicar</button><button class="subtle" onclick="clearBulkSelection()">Limpiar</button></div></div></div></details>
@@ -2277,11 +2277,13 @@ function fillEveryAvailableSlot(proposal, sourceIds, behindIds=[]){
   const progress=total>0?Math.min(1,watched/total):0;
   const remaining=total>0?Math.max(0,total-watched):Infinity;
   const completionBonus=remaining<=5?24:remaining<=12?16:remaining<=24?8:0;
-  const frequencyPenalty=(weeklyCounts[token.id]||0)*19;
+  const manualPriority=a.agendaPriority==='high'?42:a.agendaPriority==='low'?-42:0;
+  const continuityEnabled=a.agendaContinuity!==false;
+  const frequencyPenalty=(weeklyCounts[token.id]||0)*(continuityEnabled?19:7);
   const consecutivePenalty=lastAssignedDay[token.id]===dayIndex-1?9:0;
   const freshnessBonus=lastAssignedDay[token.id]===undefined?7:0;
   // Progreso avanzado tiene ventaja, pero la penalización por frecuencia mantiene variedad.
-  return progress*58+Math.min(watched,100)*0.12+completionBonus-frequencyPenalty-consecutivePenalty+freshnessBonus;
+  return manualPriority+progress*58+Math.min(watched,100)*0.12+completionBonus-frequencyPenalty-consecutivePenalty+freshnessBonus;
  };
  for(const day of days){
   proposal.schedule[day]=proposal.schedule[day]||[];
@@ -2291,6 +2293,7 @@ function fillEveryAvailableSlot(proposal, sourceIds, behindIds=[]){
    for(let i=0;i<tokens.length;i++){
     const t=tokens[i];
     if((proposal.schedule[day]||[]).some(slot=>slot?.id===t.id))continue;
+    if(t.a?.agendaContinuity!==false&&tokens.some(other=>other.id===t.id&&Number(other.ep)<Number(t.ep)))continue;
     if(t.isAiring&&t.ep<=Math.max(0,Number(proposal.airingInfo?.[t.id]?.latestAired)||0)){
      const anchorDay=proposal.airingInfo?.[t.id]?.targetDay||'';
      const anchorIndex=days.indexOf(anchorDay);
@@ -2373,6 +2376,33 @@ function promoteWaitlistIntoProposal(proposal,queuedEntries,capacities){
  }
  proposal.waitlist=remaining;
 }
+function captureRequiredAgendaAssignments(schedule=data.schedule||{}){
+ const days=['lunes','martes','miércoles','jueves','viernes','sábado','domingo'],byId=new Map();
+ for(const day of days)for(const slot of schedule[day]||[])if(slot?.id&&!isEmptyAgendaSlot(slot)&&!byId.has(slot.id))byId.set(slot.id,{id:slot.id,day,slot:{...slot}});
+ return [...byId.values()];
+}
+function scheduledAgendaIds(schedule){const ids=new Set();for(const day of ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'])for(const slot of schedule?.[day]||[])if(slot?.id&&!isEmptyAgendaSlot(slot))ids.add(slot.id);return ids;}
+function restoreRequiredAgendaAssignments(proposal,required=proposal?.requiredAgendaAssignments||[]){
+ proposal.schedule=proposal.schedule||{};const present=scheduledAgendaIds(proposal.schedule),restored=[];
+ for(const item of required||[]){if(!item?.id||present.has(item.id)||!anime(item.id))continue;const day=['lunes','martes','miércoles','jueves','viernes','sábado','domingo'].includes(item.day)?item.day:'lunes';proposal.schedule[day]=proposal.schedule[day]||[];proposal.schedule[day].push({...item.slot,id:item.id});present.add(item.id);restored.push({id:item.id,day});}
+ proposal.restoredAssignments=[...(proposal.restoredAssignments||[]),...restored];return restored;
+}
+function validateAgendaInvariant(proposal,required=proposal?.requiredAgendaAssignments||[]){
+ const errors=[],scheduled=scheduledAgendaIds(proposal?.schedule||{});
+ for(const item of required||[]){if(!anime(item.id))errors.push(`El anime ${item.id} ya no existe en la biblioteca; no se puede conservar su asignación.`);else if(!scheduled.has(item.id))errors.push(`${anime(item.id)?.title||item.id} desaparecería de la agenda.`);}
+ return errors;
+}
+function agendaAiringIsConfirmed(a){if(!a)return false;try{return !!calendarEntryForAnime(a);}catch(_){return false;}}
+function openAgendaManager(){
+ const assignments=captureRequiredAgendaAssignments(),unique=assignments.map(x=>anime(x.id)).filter(Boolean);
+ if(!unique.length){modal('<h2>📋 Gestionar agenda</h2><p>No hay animes asignados actualmente. Usa “Añadir espacio” o reorganiza la semana para comenzar.</p><div class="modal-actions"><button class="primary" onclick="closeModal()">Cerrar</button></div>');return;}
+ const rows=unique.map(a=>{const total=Math.max(0,Number(a.episodes)||Number(a.totalEpisodes)||0),watched=Math.max(0,Number(a.watched)||0),remaining=total?Math.max(0,total-watched):'—',days=assignments.filter(x=>x.id===a.id).map(x=>x.day).join(', ');
+ return `<div class="panel agenda-manage-row" style="margin:8px 0;padding:12px"><div style="display:flex;gap:10px;align-items:center"><img src="${esc(a.cover||'')}" alt="" style="width:48px;height:66px;object-fit:cover;border-radius:8px" onerror="this.style.display='none'"><div style="min-width:0;flex:1"><b>${esc(a.title)}</b><div class="muted" style="font-size:12px">${watched}/${total||'?'} vistos · ${remaining} restantes</div><div class="muted" style="font-size:11px">Asignado: ${esc(days)} ${agendaAiringIsConfirmed(a)?'· Emisión AniList':''}</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px"><label style="font-size:12px">Prioridad<select onchange="setAgendaAnimePreference('${esc(a.id)}','priority',this.value)"><option value="normal" ${(a.agendaPriority||'normal')==='normal'?'selected':''}>Normal</option><option value="high" ${a.agendaPriority==='high'?'selected':''}>Alta</option><option value="low" ${a.agendaPriority==='low'?'selected':''}>Baja</option></select></label><label style="font-size:12px;display:flex;align-items:center;gap:7px"><input type="checkbox" ${a.agendaContinuity!==false?'checked':''} onchange="setAgendaAnimePreference('${esc(a.id)}','continuity',this.checked)"> Mantener continuidad</label></div></div>`;}).join('');
+ modal(`<div class="agenda-rules-modal"><h2>📋 Gestionar animes de agenda</h2><p>Configura prioridades y continuidad. La prioridad combinada respeta tus ajustes y considera automáticamente el progreso y los episodios restantes.</p>${rows}<div class="modal-actions"><button class="subtle" onclick="closeModal()">Cerrar</button><button class="primary" onclick="saveAgendaManager()">Guardar preferencias</button></div></div>`,'agenda-rules-modal');
+}
+function setAgendaAnimePreference(id,key,value){const a=anime(id);if(!a)return;if(key==='priority'&&['high','normal','low'].includes(value))a.agendaPriority=value;if(key==='continuity')a.agendaContinuity=!!value;}
+function saveAgendaManager(){save();closeModal();render();const status=document.getElementById('weeklyRefreshStatus');if(status){status.style.display='block';status.textContent='Preferencias de prioridad y continuidad guardadas. Se aplicarán en la próxima reorganización o renovación.'}}
+
 function validateWeeklyProposal(proposal,protectedAssignments=[]){
  const errors=[],scheduled=new Set(),queueSeen=new Set();
  for(const day of WEEK_DAYS){
@@ -2397,6 +2427,7 @@ function validateWeeklyProposal(proposal,protectedAssignments=[]){
 }
 function makeWeeklyProposal(){
  const schedule=structuredClone(data.schedule||{}),done=data.doneSlots||{},removed=[],protectedAssignments=[],protectedIds=new Set();
+ const requiredAgendaAssignments=captureRequiredAgendaAssignments(schedule);
  for(const day of WEEK_DAYS){
   const arr=schedule[day]||[];
   schedule[day]=arr.filter((slot,index)=>{
@@ -2412,7 +2443,7 @@ function makeWeeklyProposal(){
  // La promoción se difiere hasta después de consultar/ancorar emisiones. De otro modo,
  // un anime de espera puede ocupar el hueco temporal de un anime existente que AniList
  // está reubicando, y ese anime puede perder su última asignación.
- return {schedule,removed,promoted:[],waitlist:[...(data.waitlist||[])],updates:[],unmatched:[],finished:[],dayMoves:[],dayConflicts:[],weekKey:isoWeekKey(),doneSlots:{},shuffledMoves,shuffleEnabled:!!data.settings?.shuffleNonAiringWeekly,protectedAssignments,restoredAssignments:[],integrityErrors:[]};
+ return {schedule,removed,promoted:[],waitlist:[...(data.waitlist||[])],updates:[],unmatched:[],finished:[],dayMoves:[],dayConflicts:[],weekKey:isoWeekKey(),doneSlots:{},shuffledMoves,shuffleEnabled:!!data.settings?.shuffleNonAiringWeekly,protectedAssignments,requiredAgendaAssignments,restoredAssignments:[],integrityErrors:[]};
 }
 async function previewWeeklyRenewal(manual=false){
  const status=document.getElementById('weeklyRefreshStatus'),button=document.getElementById('weeklyRefreshBtn');
@@ -2469,7 +2500,8 @@ async function previewWeeklyRenewal(manual=false){
   // Segunda comprobación tras rellenar huecos: no se permite que la normalización deje
   // un título previamente asignado sin ninguna ubicación.
   restoreMissingWeeklyAssignments(proposal,proposal.protectedAssignments);
-  proposal.integrityErrors=validateWeeklyProposal(proposal,proposal.protectedAssignments);
+  restoreRequiredAgendaAssignments(proposal,proposal.requiredAgendaAssignments);
+  proposal.integrityErrors=[...validateWeeklyProposal(proposal,proposal.protectedAssignments),...validateAgendaInvariant(proposal,proposal.requiredAgendaAssignments)];
   // Evita duplicar la misma notificación de movimiento si hay varios espacios del mismo título.
   const moveKeys=new Set();proposal.dayMoves=proposal.dayMoves.filter(m=>{const k=`${m.id}|${m.from}|${m.to}`;if(moveKeys.has(k))return false;moveKeys.add(k);return true;});
   window.__weeklyProposal=proposal;
@@ -2490,7 +2522,7 @@ async function previewWeeklyRenewal(manual=false){
 }
 function applyWeeklyRenewal(){
  const p=window.__weeklyProposal;if(!p){closeModal();return}
- const integrityErrors=validateWeeklyProposal(p,p.protectedAssignments||[]);
+ const integrityErrors=[...validateWeeklyProposal(p,p.protectedAssignments||[]),...validateAgendaInvariant(p,p.requiredAgendaAssignments||[])];
  if(integrityErrors.length){alert('No se puede renovar porque la agenda no pasó la comprobación de integridad. No se modificó ningún dato.\n\n'+integrityErrors.join('\n'));return;}
  if(!confirm(`¿Aplicar la renovación de ${p.weekKey}? El progreso de episodios vistos se conservará.`))return;
  data.schedule=p.schedule;data.waitlist=p.waitlist;data.doneSlots={};for(const [id,update] of Object.entries(p.animeUpdates||{})){const a=anime(id);if(a){if(update.status!==undefined)a.status=update.status;if(update.airingDay!==undefined)a.airingDay=update.airingDay;if(update.airingDetectedAt!==undefined)a.airingDetectedAt=update.airingDetectedAt;if(update.nextLabel!==undefined)a.nextLabel=update.nextLabel;if(Number(update.episodes)>0)a.episodes=Number(update.episodes);if(Number(update.nextAiringAt)>0)a.nextAiringAt=Number(update.nextAiringAt);else if(update.nextAiringAt===0)delete a.nextAiringAt;}}data.weeklyUpdate={lastAppliedWeek:p.weekKey,appliedAt:new Date().toISOString()};
@@ -2508,7 +2540,8 @@ async function previewWeeklyReorganization(){
   await refreshAiringCalendarForWeeklyAction();
   const days=['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
   const capacities=getAgendaCapacities();
-  const proposal={kind:'reorganize-current',schedule:structuredClone(data.schedule||{}),dayMoves:[],dayConflicts:[],updates:[],unmatched:[],finished:[],animeUpdates:{},doneByAnime:{},behindAiringIds:[],doneEpisodeKeys:{},changed:0,diagnostics:{calendarRows:airingCalendarCache.length,calendarMatched:0,detailMatched:0,calendarOnly:0,unknown:0,calendarError:airingCalendarLastError||''}};
+  const requiredAgendaAssignments=captureRequiredAgendaAssignments(data.schedule||{});
+  const proposal={kind:'reorganize-current',requiredAgendaAssignments,schedule:structuredClone(data.schedule||{}),dayMoves:[],dayConflicts:[],updates:[],unmatched:[],finished:[],animeUpdates:{},doneByAnime:{},behindAiringIds:[],doneEpisodeKeys:{},changed:0,diagnostics:{calendarRows:airingCalendarCache.length,calendarMatched:0,detailMatched:0,calendarOnly:0,unknown:0,calendarError:airingCalendarLastError||''}};
   // Guarda las marcas de visto asociadas al anime, no al índice visual del espacio.
   for(const day of days){const slots=data.schedule?.[day]||[];slots.forEach((slot,index)=>{if(slot?.id&&data.doneSlots?.[`main-${day}-${index}`])proposal.doneEpisodeKeys[`${slot.id}|${slot.ep||''}`]=true;});}
   const ids=[];const seen=new Set();
@@ -2589,6 +2622,9 @@ async function previewWeeklyReorganization(){
   // Completar todos los espacios disponibles con animes de la semana: no emitidos primero y
   // episodios atrasados confirmados de los que siguen en emisión.
   fillEveryAvailableSlot(proposal,ids,proposal.behindAiringIds);
+  restoreRequiredAgendaAssignments(proposal,proposal.requiredAgendaAssignments);
+  proposal.integrityErrors=validateAgendaInvariant(proposal,proposal.requiredAgendaAssignments);
+  if(proposal.integrityErrors.length)throw new Error('La propuesta no conserva todos los animes de la agenda. No se aplicará ningún cambio. '+proposal.integrityErrors.join(' '));
   proposal.changed=proposal.dayMoves.length+proposal.updates.length+proposal.filledSlots.length+proposal.duplicateSlotsRemoved.length;proposal.diagnostics.behindTitles=proposal.behindAiringIds.length;proposal.diagnostics.filledAiringBacklog=proposal.filledSlots.filter(x=>String(x.reason||'').includes('emitido')||String(x.reason||'').includes('emisión')).length;
   window.__weeklyReorganizationProposal=proposal;
   const plan=days.map(day=>{const items=(proposal.schedule[day]||[]).map(slot=>{const a=anime(slot.id);return `<li>${esc(a?.title||'Espacio vacío')} <span style="color:var(--muted)">· ${esc(slot.ep||'Sin etiqueta')}</span>${proposal.dayMoves.some(m=>m.id===slot.id&&m.to===day)?' <b style="color:var(--success)">· Movido aquí</b>':''}</li>`}).join('');return `<div class="panel" style="margin:8px 0"><h4 style="margin:0 0 6px">${esc(day[0].toUpperCase()+day.slice(1))} (${(proposal.schedule[day]||[]).length}/${capacities[day]})</h4>${items?`<ul>${items}</ul>`:'<p style="color:var(--muted)">Sin espacios principales.</p>'}</div>`}).join('');
@@ -2605,6 +2641,8 @@ async function previewWeeklyReorganization(){
 }
 function applyWeeklyReorganization(){
  const p=window.__weeklyReorganizationProposal;if(!p){closeModal();return;}
+ const integrityErrors=validateAgendaInvariant(p,p.requiredAgendaAssignments||[]);
+ if(integrityErrors.length){alert('No se puede aplicar la reorganización: se perderían animes de la agenda. No se modificó ningún dato.\\n\\n'+integrityErrors.join('\\n'));return;}
  if(!confirm(`¿Aplicar la reorganización de la semana actual? Se moverán ${p.dayMoves.length} asignaciones, se actualizarán ${p.updates.length} etiquetas y se rellenarán ${p.filledSlots?.length||0} espacios con episodios de animes que ya están en la semana. No se repetirá un anime en el mismo día. El progreso visto se conservará.`))return;
  data.schedule=p.schedule;
  // Recalcula las marcas visuales por anime para que no se transfieran accidentalmente a otro slot.
@@ -3544,7 +3582,16 @@ document.getElementById('importFile').onchange=async e=>{
  }catch(err){alert(`No se pudo importar “${f.name}”.\n\n${err.message||'Error de lectura.'}`);}
  finally{e.target.value='';}
 };
-document.getElementById('editWeekRulesBtn').onclick=openWeekRulesEditor;document.getElementById('resetWeekBtn').onclick=()=>{if(confirm('¿Restablecer los espacios de la agenda a la configuración inicial? Tu biblioteca y progreso se conservarán.')){data.schedule=structuredClone(defaultSchedule);data.doneSlots={};window.selectedWeekDay=getTodayName();save()}};document.getElementById('clearDataBtn').onclick=()=>{if(confirm('¿Borrar toda la biblioteca y la agenda guardadas en este navegador?')){localStorage.removeItem(STORAGE_KEY);data=load();render();switchView('home')}};
+document.getElementById('editWeekRulesBtn').onclick=openWeekRulesEditor;document.getElementById('resetWeekBtn').onclick=()=>{
+ const protectedIds=new Set((data.anime||[]).filter(a=>a&&(isWeeklyFixedAnime(a)||agendaAiringIsConfirmed(a))).map(a=>a.id));
+ const previous=data.schedule||{},protectedSlots={};for(const day of WEEK_DAYS)protectedSlots[day]=(previous[day]||[]).filter(slot=>slot?.id&&protectedIds.has(slot.id)).map(slot=>({...slot}));
+ const count=Object.values(previous).flat().filter(slot=>slot?.id).length,kept=new Set(Object.values(protectedSlots).flat().map(slot=>slot.id));
+ if(confirm(`¿Dejar la agenda vacía excepto los animes fijos y los que AniList confirma en emisión? Se conservarán ${kept.size} títulos protegidos; los demás dejarán espacios libres. Biblioteca, progreso y extras no cambiarán.`)){
+  data.schedule={};for(const day of WEEK_DAYS)data.schedule[day]=protectedSlots[day]||[];
+  data.doneSlots={};window.selectedWeekDay=getTodayName();save();render();
+  const status=document.getElementById('weeklyRefreshStatus');if(status){status.style.display='block';status.textContent=`Agenda restablecida: ${kept.size} títulos fijos o en emisión permanecen; ${Math.max(0,count-kept.size)} asignaciones se liberaron. Biblioteca, progreso y extras intactos.`;}
+ }
+};document.getElementById('clearDataBtn').onclick=()=>{if(confirm('¿Borrar toda la biblioteca y la agenda guardadas en este navegador?')){localStorage.removeItem(STORAGE_KEY);data=load();render();switchView('home')}};
 // v48: enlaces explícitos y diagnóstico visible para los botones de agenda.
 function bindWeeklyAction(buttonId, actionName, busyLabel, successLabel){
  const button=document.getElementById(buttonId);
