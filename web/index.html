@@ -2392,7 +2392,7 @@ function validateAgendaInvariant(proposal,required=proposal?.requiredAgendaAssig
  for(const item of required||[]){if(!anime(item.id))errors.push(`El anime ${item.id} ya no existe en la biblioteca; no se puede conservar su asignación.`);else if(!scheduled.has(item.id))errors.push(`${anime(item.id)?.title||item.id} desaparecería de la agenda.`);}
  return errors;
 }
-function agendaAiringIsConfirmed(a){if(!a)return false;try{return !!calendarEntryForAnime(a);}catch(_){return false;}}
+function agendaAiringIsConfirmed(a){if(!a)return false;try{return !!calendarEntryForAnime(a)||(a.status==='airing'&&a.airingSource==='AniList'&&Number(a.nextAiringAt)>0);}catch(_){return a.status==='airing'&&a.airingSource==='AniList'&&Number(a.nextAiringAt)>0;}}
 function openAgendaManager(){
  const assignments=captureRequiredAgendaAssignments(),unique=assignments.map(x=>anime(x.id)).filter(Boolean);
  if(!unique.length){modal('<h2>📋 Gestionar agenda</h2><p>No hay animes asignados actualmente. Usa “Añadir espacio” o reorganiza la semana para comenzar.</p><div class="modal-actions"><button class="primary" onclick="closeModal()">Cerrar</button></div>');return;}
@@ -2644,6 +2644,8 @@ function applyWeeklyReorganization(){
  const integrityErrors=validateAgendaInvariant(p,p.requiredAgendaAssignments||[]);
  if(integrityErrors.length){alert('No se puede aplicar la reorganización: se perderían animes de la agenda. No se modificó ningún dato.\\n\\n'+integrityErrors.join('\\n'));return;}
  if(!confirm(`¿Aplicar la reorganización de la semana actual? Se moverán ${p.dayMoves.length} asignaciones, se actualizarán ${p.updates.length} etiquetas y se rellenarán ${p.filledSlots?.length||0} espacios con episodios de animes que ya están en la semana. No se repetirá un anime en el mismo día. El progreso visto se conservará.`))return;
+ const finalIntegrityErrors=validateAgendaInvariant(p,p.requiredAgendaAssignments||[]);
+ if(finalIntegrityErrors.length){alert('La agenda cambió mientras se confirmaba la operación. No se guardó ningún cambio.\\n\\n'+finalIntegrityErrors.join('\\n'));return;}
  data.schedule=p.schedule;
  // Recalcula las marcas visuales por anime para que no se transfieran accidentalmente a otro slot.
  const nextDone={};const days=['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
@@ -3587,8 +3589,10 @@ document.getElementById('editWeekRulesBtn').onclick=openWeekRulesEditor;document
  const previous=data.schedule||{},protectedSlots={};for(const day of WEEK_DAYS)protectedSlots[day]=(previous[day]||[]).filter(slot=>slot?.id&&protectedIds.has(slot.id)).map(slot=>({...slot}));
  const count=Object.values(previous).flat().filter(slot=>slot?.id).length,kept=new Set(Object.values(protectedSlots).flat().map(slot=>slot.id));
  if(confirm(`¿Dejar la agenda vacía excepto los animes fijos y los que AniList confirma en emisión? Se conservarán ${kept.size} títulos protegidos; los demás dejarán espacios libres. Biblioteca, progreso y extras no cambiarán.`)){
+  const doneEpisodes=new Set();for(const day of WEEK_DAYS)(previous[day]||[]).forEach((slot,index)=>{if(data.doneSlots?.[`main-${day}-${index}`]&&slot?.id)doneEpisodes.add(`${slot.id}|${slot.ep||''}`);});
   data.schedule={};for(const day of WEEK_DAYS)data.schedule[day]=protectedSlots[day]||[];
-  data.doneSlots={};window.selectedWeekDay=getTodayName();save();render();
+  const nextDone={};for(const day of WEEK_DAYS)(data.schedule[day]||[]).forEach((slot,index)=>{if(slot?.id&&doneEpisodes.has(`${slot.id}|${slot.ep||''}`))nextDone[`main-${day}-${index}`]=true;});
+  data.doneSlots=nextDone;window.selectedWeekDay=getTodayName();save();render();
   const status=document.getElementById('weeklyRefreshStatus');if(status){status.style.display='block';status.textContent=`Agenda restablecida: ${kept.size} títulos fijos o en emisión permanecen; ${Math.max(0,count-kept.size)} asignaciones se liberaron. Biblioteca, progreso y extras intactos.`;}
  }
 };document.getElementById('clearDataBtn').onclick=()=>{if(confirm('¿Borrar toda la biblioteca y la agenda guardadas en este navegador?')){localStorage.removeItem(STORAGE_KEY);data=load();render();switchView('home')}};
