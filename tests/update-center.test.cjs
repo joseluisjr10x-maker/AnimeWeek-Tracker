@@ -14,6 +14,8 @@ const gradle = read('android/app/build.gradle');
 const paths = read('android/app/src/main/res/xml/file_paths.xml');
 const latest = JSON.parse(read('latest.json'));
 const pkg = JSON.parse(read('package.json'));
+const webManifest = JSON.parse(read('web/manifest.webmanifest'));
+const themeNames = ['aurora','violet','ocean','sunset','gold','mono','halloween','christmas','newyear','valentines','spring','dayofdead'];
 
 assert.match(index, /<script src="update-center\.js"><\/script>/, 'web app loads the update center');
 assert.match(index, /<\/body>\s*<\/html>\s*$/, 'document has a single final HTML close');
@@ -22,13 +24,26 @@ assert.match(backupBridge, /saveJson\(String filename, String json, String callb
 assert.match(backupBridge, /callback\(\{success:/, 'native backup bridge confirms completion to the web app');
 assert.match(index, /appBrandLogoImage/, 'theme-aware brand logo is present');
 assert.match(index, /v95-29-festive-wallpaper-and-theme-logos/, 'festive background wallpaper is present');
-assert.ok(updater.includes("APP_VERSION = '95.29.0'"), 'updater reports the current app version');
+assert.ok(updater.includes("APP_VERSION = '95.30.0'"), 'updater reports the current app version');
 assert.match(updater, /raw\.githubusercontent\.com/, 'updater reads the GitHub manifest');
 assert.match(updater, /AndroidUpdateInstaller\.downloadAndInstall/, 'updater calls the native Android installer');
 assert.match(main, /"AndroidUpdateInstaller"/, 'MainActivity exposes the native update bridge');
 assert.match(installer, /setLauncherTheme/, 'native bridge can switch the launcher icon with the selected theme');
+assert.match(installer, /95\\.30\\.0/, 'native updater fallback version is current');
 assert.match(manifest, /LauncherAurora/, 'Android has a default theme launcher alias');
 assert.match(manifest, /LauncherHalloween/, 'Android includes festive launcher aliases');
+assert.match(manifest, /@drawable\\/animeweek_icon_aurora/, 'Android launcher uses the original Aurora emblem');
+assert.match(manifest, /@drawable\\/animeweek_icon_dayofdead/, 'Android launcher uses the original Day of the Dead emblem');
+assert.match(gradle, /copyAnimeWeekThemeIcons/, 'Gradle copies theme emblems into Android drawable resources');
+assert.match(gradle, /web\\/assets\\/theme-icons/, 'Android resources come from the original web theme artwork');
+assert.ok(index.includes("const iconUrl=festiveThemeAssets[id]||'assets/theme-icons/aurora.webp'"), 'header and favicon use original theme WebP artwork');
+assert.ok(index.includes('v95-30-theme-surface-cohesion'), 'theme palettes style app backgrounds and cards');
+assert.equal(webManifest.icons[0].src, 'assets/theme-icons/aurora.webp');
+assert.equal(webManifest.icons[0].type, 'image/webp');
+for (const theme of themeNames) {
+  assert.ok(fs.existsSync(path.join(root, 'web/assets/theme-icons', theme + '.webp')), 'original theme art exists: ' + theme);
+  assert.match(manifest, new RegExp('@drawable/animeweek_icon_' + theme + '\\\\b'), 'Android launcher alias references original art: ' + theme);
+}
 
 assert.match(installer, /SHA-256/, 'native updater validates SHA-256');
 assert.match(installer, /getApkContentsSigners/, 'native updater verifies the APK signer');
@@ -36,8 +51,8 @@ assert.match(installer, /getInstalledVersion/, 'native updater reports installed
 assert.match(installer, /getLongVersionCode/, 'native updater rejects old versionCode');
 assert.match(manifest, /REQUEST_INSTALL_PACKAGES/, 'app declares package-install permission');
 assert.match(paths, /external-files-path/, 'FileProvider exposes private downloaded APKs');
-assert.match(gradle, /9529000/, 'native versionCode has been advanced');
-assert.equal(pkg.version, '95.29.0');
+assert.match(gradle, /9530000/, 'native versionCode has been advanced');
+assert.equal(pkg.version, '95.30.0');
 assert.equal(latest.appId, 'com.animeweek.tracker');
 assert.equal(latest.version, '95.28.0');
 assert.equal(latest.android.enabled, false, 'APK updates stay disabled until signing is confirmed');
