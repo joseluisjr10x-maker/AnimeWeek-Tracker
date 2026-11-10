@@ -3590,12 +3590,17 @@ document.getElementById('editWeekRulesBtn').onclick=openWeekRulesEditor;document
  const protectedIds=new Set((data.anime||[]).filter(a=>a&&(isWeeklyFixedAnime(a)||agendaAiringIsConfirmed(a))).map(a=>a.id));
  const previous=data.schedule||{},protectedSlots={};for(const day of WEEK_DAYS)protectedSlots[day]=(previous[day]||[]).filter(slot=>slot?.id&&protectedIds.has(slot.id)).map(slot=>({...slot}));
  const count=Object.values(previous).flat().filter(slot=>slot?.id).length,kept=new Set(Object.values(protectedSlots).flat().map(slot=>slot.id));
- if(confirm(`¿Dejar la agenda vacía excepto los animes fijos y los que AniList confirma en emisión? Se conservarán ${kept.size} títulos protegidos; los demás dejarán espacios libres. Biblioteca, progreso y extras no cambiarán.`)){
+ const freedIds=[...new Set(Object.values(previous).flat().filter(slot=>slot?.id&&!protectedIds.has(slot.id)).map(slot=>slot.id))].filter(id=>anime(id));
+ if(confirm(`¿Dejar la agenda vacía excepto los animes fijos y los que AniList confirma en emisión? Se conservarán ${kept.size} títulos protegidos; los demás pasarán a la lista de espera para que puedas volver a asignarlos. Biblioteca, progreso y extras no cambiarán.`)){
   const doneEpisodes=new Set();for(const day of WEEK_DAYS)(previous[day]||[]).forEach((slot,index)=>{if(data.doneSlots?.[`main-${day}-${index}`]&&slot?.id)doneEpisodes.add(`${slot.id}|${slot.ep||''}`);});
   data.schedule={};for(const day of WEEK_DAYS)data.schedule[day]=protectedSlots[day]||[];
   const nextDone={};for(const day of WEEK_DAYS)(data.schedule[day]||[]).forEach((slot,index)=>{if(slot?.id&&doneEpisodes.has(`${slot.id}|${slot.ep||''}`))nextDone[`main-${day}-${index}`]=true;});
-  data.doneSlots=nextDone;window.selectedWeekDay=getTodayName();save();render();
-  const status=document.getElementById('weeklyRefreshStatus');if(status){status.style.display='block';status.textContent=`Agenda restablecida: ${kept.size} títulos fijos o en emisión permanecen; ${Math.max(0,count-kept.size)} asignaciones se liberaron. Biblioteca, progreso y extras intactos.`;}
+  data.doneSlots=nextDone;
+  const stillScheduled=scheduledAgendaIds(data.schedule);
+  data.waitlist=(data.waitlist||[]).filter(entry=>entry?.id&&anime(entry.id)&&!stillScheduled.has(entry.id));
+  freedIds.forEach(id=>queueEntry(id,'reset-agenda'));
+  window.selectedWeekDay=getTodayName();save();render();
+  const status=document.getElementById('weeklyRefreshStatus');if(status){status.style.display='block';status.textContent=`Agenda restablecida: ${kept.size} títulos fijos o en emisión permanecen; ${freedIds.length} anime se enviaron a la lista de espera para volver a asignarlos. Biblioteca, estados, progreso y extras intactos.`;}
  }
 };document.getElementById('clearDataBtn').onclick=()=>{if(confirm('¿Borrar toda la biblioteca y la agenda guardadas en este navegador?')){localStorage.removeItem(STORAGE_KEY);data=load();render();switchView('home')}};
 // v48: enlaces explícitos y diagnóstico visible para los botones de agenda.
