@@ -1496,7 +1496,7 @@ function refreshThemeIcon(theme){
   brandLogo.src=iconUrl;
   brandLogo.alt='Logo de AnimeWeek Tracker · tema '+id;
  }
- document.querySelectorAll('link[rel="icon"],link[rel="apple-touch-icon"]').forEach(link=>{link.href=iconUrl;});
+ document.querySelectorAll('link[rel="icon"],link[rel="apple-touch-icon"]').forEach(link=>{link.href=iconUrl;link.type='image/webp';});
  const manifest=document.querySelector('link[rel="manifest"]');
  if(manifest){
   const themedManifest={id:'./',name:'AnimeWeek Tracker',short_name:'AnimeWeek',description:'Agenda semanal, biblioteca y progreso de anime.',lang:'es-MX',start_url:'./index.html',scope:'./',display:'standalone',orientation:'any',background_color:getComputedStyle(document.body).getPropertyValue('--bg').trim()||'#0d0f18',theme_color:getComputedStyle(document.body).getPropertyValue('--theme-accent').trim()||'#54e7f5',icons:[{src:iconUrl,sizes:'384x384',type:'image/webp',purpose:'any maskable'}]};
@@ -4220,5 +4220,54 @@ body[data-global-theme="dayofdead"] .panel:after{content:none!important;display:
 })();
 </script>
 
+<style id="v95-30-theme-surface-cohesion">
+/* Every card family and the personal profile card derives its finish from its selected emblem palette. */
+body[data-global-theme] .home-profile{
+ background:
+  radial-gradient(circle at 88% 12%,color-mix(in srgb,var(--theme-accent) 27%,transparent),transparent 36%),
+  linear-gradient(120deg,color-mix(in srgb,var(--theme-accent-2) 30%,var(--panel2)),var(--panel) 60%,var(--bg))!important;
+ border-color:color-mix(in srgb,var(--theme-accent) 48%,var(--line))!important;
+ box-shadow:0 0 0 1px color-mix(in srgb,var(--theme-accent) 13%,transparent),0 20px 55px #05071166!important;
+}
+body[data-global-theme] .app-topbar,
+body[data-global-theme] .app-statusbar,
+body[data-global-theme] .mobile-bottom-nav{
+ border-color:var(--line)!important;
+}
+body[data-global-theme] .app-statusbar,
+body[data-global-theme] .mobile-bottom-nav{
+ background-color:var(--theme-nav)!important;
+}
+body[data-global-theme] .panel,
+body[data-global-theme] .card,
+body[data-global-theme] .anime-card,
+body[data-global-theme] .anime-tile,
+body[data-global-theme] .details-card,
+body[data-global-theme] .info-card,
+body[data-global-theme] .episode-card,
+body[data-global-theme] .franchise-card,
+body[data-global-theme] .week-card,
+body[data-global-theme] .day-card,
+body[data-global-theme] .library-card,
+body[data-global-theme] .profile-card,
+body[data-global-theme] .stat-card,
+body[data-global-theme] .ranking-card,
+body[data-global-theme] .calendar-card,
+body[data-global-theme] .agenda-card{
+ color:var(--text)!important;
+ border-color:var(--line)!important;
+}
+body[data-global-theme] .muted,
+body[data-global-theme] .subtitle,
+body[data-global-theme] .description,
+body[data-global-theme] .card-meta{color:var(--muted)}
+body[data-global-theme] .app-topbar .brand h1 span{color:var(--theme-accent)!important}
+body[data-global-theme] .section-title h2,
+body[data-global-theme] .premium-section-head h2,
+body[data-global-theme] .view-heading h2{color:var(--text)!important}
+body[data-global-theme] input,
+body[data-global-theme] select,
+body[data-global-theme] textarea{accent-color:var(--theme-accent)}
+</style>
 </body>
 </html>
