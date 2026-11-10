@@ -4360,8 +4360,9 @@ body[data-global-theme] textarea{accent-color:var(--theme-accent)}
 .agenda-toolbar #weeklyRefreshBtn{order:4}
 .agenda-toolbar #reorganizeWeekBtn{order:5}
 @media(max-width:760px){
- .agenda-heading{align-items:stretch;gap:2px;margin:0 0 8px}
- .agenda-toolbar{width:100%;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+ .agenda-heading{display:flex;flex-direction:column;align-items:stretch;gap:2px;margin:0 0 8px}
+ .agenda-heading>div:first-child{flex:none;width:100%}
+ .agenda-toolbar{width:100%;margin:0;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
  .agenda-toolbar button{min-height:34px;padding:7px 5px;font-size:10.5px}
  .agenda-toolbar button:nth-child(4),.agenda-toolbar #reorganizeWeekBtn{grid-column:span 3}
  .agenda-toolbar button:nth-child(1),.agenda-toolbar button:nth-child(2),.agenda-toolbar #resetWeekBtn{grid-column:span 2}
