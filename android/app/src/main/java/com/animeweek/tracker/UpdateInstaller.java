@@ -82,7 +82,7 @@ public final class UpdateInstaller {
     public String getInstalledVersion() {
         try {
             PackageInfo info = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0);
-            return info.versionName == null ? "95.30.1" : info.versionName;
+            return info.versionName == null ? "95.30.2" : info.versionName;
         } catch (Exception ignored) {
             return "95.30.1";
         }
