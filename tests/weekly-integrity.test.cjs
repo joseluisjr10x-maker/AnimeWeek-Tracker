@@ -174,7 +174,7 @@ const continuityOff = {schedule:{lunes:[],martes:[],miércoles:[],jueves:[],vier
 library.high.agendaContinuity=false;
 context.prepareAgendaRedistribution(continuityOff,['high'],days);
 context.fillEveryAvailableSlot(continuityOff,['high'],[]);
-assert.strictEqual(continuityOff.filledSlots[1].priorityScore-continuityOn.filledSlots[1].priorityScore,12,'Continuidad activa distribuye frecuencia con penalización mayor');
+assert.strictEqual(continuityOff.filledSlots[1].priorityScore-continuityOn.filledSlots[1].priorityScore,28,'Continuidad activa aplica penalización de frecuencia y de días consecutivos');
 assert.deepStrictEqual(Array.from(continuityOn.schedule.lunes.concat(continuityOn.schedule.martes).map(x=>x.ep)), ['Episodio 1','Episodio 2']);
 assert(new Set(continuityOff.schedule.lunes.concat(continuityOff.schedule.martes).map(x=>x.ep)).size===2,'No se deben duplicar episodios al relajar continuidad');
 
