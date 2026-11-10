@@ -25,12 +25,12 @@ assert.match(backupBridge, /saveJson\(String filename, String json, String callb
 assert.match(backupBridge, /callback\(\{success:/, 'native backup bridge confirms completion to the web app');
 assert.match(index, /appBrandLogoImage/, 'theme-aware brand logo is present');
 assert.match(index, /v95-29-festive-wallpaper-and-theme-logos/, 'festive background wallpaper is present');
-assert.ok(updater.includes("APP_VERSION = '95.30.1'"), 'updater reports the current app version');
+assert.ok(updater.includes("APP_VERSION = '95.30.2'"), 'updater reports the current app version');
 assert.match(updater, /raw\.githubusercontent\.com/, 'updater reads the GitHub manifest');
 assert.match(updater, /AndroidUpdateInstaller\.downloadAndInstall/, 'updater calls the native Android installer');
 assert.match(main, /"AndroidUpdateInstaller"/, 'MainActivity exposes the native update bridge');
 assert.match(installer, /setLauncherTheme/, 'native bridge can switch the launcher icon with the selected theme');
-assert.ok(installer.includes('95.30.1'), 'native updater fallback version is current');
+assert.ok(installer.includes('95.30.2'), 'native updater fallback version is current');
 assert.match(manifest, /LauncherAurora/, 'Android has a default theme launcher alias');
 assert.match(manifest, /LauncherHalloween/, 'Android includes festive launcher aliases');
 assert.ok(manifest.includes('@drawable/animeweek_icon_crop_aurora'), 'Android launcher uses the cropped original Aurora emblem');
@@ -66,8 +66,8 @@ assert.match(installer, /getInstalledVersion/, 'native updater reports installed
 assert.match(installer, /getLongVersionCode/, 'native updater rejects old versionCode');
 assert.match(manifest, /REQUEST_INSTALL_PACKAGES/, 'app declares package-install permission');
 assert.match(paths, /external-files-path/, 'FileProvider exposes private downloaded APKs');
-assert.match(gradle, /9530001/, 'native versionCode has been advanced');
-assert.equal(pkg.version, '95.30.1');
+assert.match(gradle, /9530002/, 'native versionCode has been advanced');
+assert.equal(pkg.version, '95.30.2');
 assert.equal(latest.appId, 'com.animeweek.tracker');
 assert.equal(latest.version, '95.30.1');
 assert.equal(latest.android.enabled, true, 'the verified v95.30.1 Android Release is enabled');
