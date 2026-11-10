@@ -7,10 +7,15 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Version name for a test build (for example 95.28.0)
+        description: Version name to build (for example 95.29.0)
         required: true
-        default: '95.28.0'
+        default: '95.29.0'
         type: string
+      publish_release:
+        description: Publish this verified APK as an official GitHub Release and activate latest.json
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -158,8 +163,8 @@ jobs:
           echo "apk=$APK" >> "$GITHUB_OUTPUT"
           echo "sha256=$(sha256sum "$APK" | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
 
-      - name: Upload test APK artifact (manual build only)
-        if: github.event_name == 'workflow_dispatch'
+      - name: Upload test APK artifact (manual test builds only)
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_release == false
         uses: actions/upload-artifact@v4
         with:
           name: AnimeWeek-Tracker-${{ steps.version.outputs.version }}-signed-test-apk
@@ -168,7 +173,7 @@ jobs:
           retention-days: 14
 
       - name: Publish GitHub Release with APK
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish_release == true)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.version.outputs.tag }}
@@ -183,7 +188,7 @@ jobs:
           fi
 
       - name: Update latest.json on main
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish_release == true)
         env:
           VERSION: ${{ steps.version.outputs.version }}
           VERSION_CODE: ${{ steps.version.outputs.version_code }}
