@@ -2300,13 +2300,11 @@ function fillEveryAvailableSlot(proposal, sourceIds, behindIds=[]){
   const effectiveAnime={...a,episodes:Math.max(0,Number(proposal.animeUpdates?.[token.id]?.episodes)||Number(a.episodes)||Number(a.totalEpisodes)||0)};
   const engine=window.AgendaPriorityEngine;
   if(!engine||typeof engine.calculatePriorityScore!=='function')throw new Error('No se pudo cargar el motor de prioridades de agenda.');
-  const base=engine.calculatePriorityScore(effectiveAnime);
-  const frequencyPenalty=Math.min(12,(weeklyCounts[token.id]||0)*4);
-  const consecutivePenalty=lastAssignedDay[token.id]===dayIndex-1?4:0;
-  const freshnessBonus=lastAssignedDay[token.id]===undefined?2:0;
-  // La prioridad manual se compara primero y no puede ser anulada por variedad.
-  // Dentro del mismo nivel, progreso (30%) y variedad deciden el orden.
-  return {manualScore:base.manualScore,score:base.progressScore-frequencyPenalty-consecutivePenalty+freshnessBonus};
+  const continuityEnabled=a.agendaContinuity!==false;
+  const allocation=engine.calculateAllocationScore(effectiveAnime,weeklyCounts[token.id]||0,lastAssignedDay[token.id]===dayIndex-1,continuityEnabled);
+  // La puntuación manual/progreso determina el peso de reparto; la frecuencia
+  // reduce el rendimiento marginal para repartir espacios sin excluir prioridades bajas.
+  return {allocationScore:allocation.allocationScore,priorityScore:allocation.priorityScore};
  };
  for(const day of days){
   proposal.schedule[day]=proposal.schedule[day]||[];
@@ -2325,14 +2323,14 @@ function fillEveryAvailableSlot(proposal, sourceIds, behindIds=[]){
     candidates.push({index:i,token:t,priority:priorityFor(t,dayIndex)});
    }
    if(!candidates.length)break;
-   candidates.sort((x,y)=>y.priority.manualScore-x.priority.manualScore||y.priority.score-x.priority.score||x.token.ep-y.token.ep||x.token.order-y.token.order);
+   candidates.sort((x,y)=>y.priority.allocationScore-x.priority.allocationScore||y.priority.priorityScore-x.priority.priorityScore||x.token.ep-y.token.ep||x.token.order-y.token.order);
    const chosen=candidates[0],token=tokens.splice(chosen.index,1)[0],slot={id:token.id,ep:`Episodio ${token.ep}`};
    proposal.schedule[day].push(slot);
    weeklyCounts[token.id]=(weeklyCounts[token.id]||0)+1;lastAssignedDay[token.id]=dayIndex;
    const a=token.a||anime(token.id)||{},total=Math.max(0,Number(proposal.animeUpdates?.[token.id]?.episodes)||Number(a.episodes)||Number(a.totalEpisodes)||0),watched=Math.max(0,Number(a.watched)||0);
    const progressLabel=total?`${Math.round(Math.min(1,watched/total)*100)}% de progreso`:'progreso registrado';
    const reason=token.isAiring?token.reason:`${token.reason} · prioridad por ${progressLabel}${total&&total-watched<=12?' y cercanía al final':''}`;
-   proposal.filledSlots.push({id:token.id,title:token.a.title,day,ep:slot.ep,reason,priorityScore:Math.round(chosen.score)});
+   proposal.filledSlots.push({id:token.id,title:token.a.title,day,ep:slot.ep,reason,priorityScore:Math.round(chosen.priority.priorityScore)});
   }
  }
  proposal.emptySlots=days.reduce((sum,day)=>sum+Math.max(0,capacities[day]-(proposal.schedule[day]||[]).length),0);
