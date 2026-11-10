@@ -9,7 +9,7 @@
   "display": "standalone",
   "orientation": "any",
   "background_color": "#0d0f18",
-  "theme_color": "#54e7f5",
+  "theme_color": "#a58bff",
   "categories": [
     "entertainment",
     "lifestyle",
@@ -17,9 +17,9 @@
   ],
   "icons": [
     {
-      "src": "theme-icons/aurora.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "assets/theme-icons/aurora.webp",
+      "sizes": "384x384",
+      "type": "image/webp",
       "purpose": "any maskable"
     }
   ]
