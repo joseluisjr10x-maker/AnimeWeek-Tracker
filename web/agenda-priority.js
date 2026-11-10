@@ -38,6 +38,20 @@
     };
   }
 
+  // Convert the 70/30 priority score into a bounded allocation weight.
+  // The +1 floor guarantees that low-priority titles can still receive slots.
+  function calculateAllocationScore(anime, weeklyCount, consecutive, continuityEnabled) {
+    const base = calculatePriorityScore(anime);
+    const weight = 1 + (base.score / 50);
+    const count = Math.max(0, Number(weeklyCount) || 0);
+    const consecutivePenalty = continuityEnabled !== false && consecutive ? 0.4 : 0;
+    return {
+      priorityScore: base.score,
+      weight: Math.round(weight * 1000) / 1000,
+      allocationScore: Math.round((weight / (count + 1) - consecutivePenalty) * 1000) / 1000
+    };
+  }
+
   function rankAnime(animeList) {
     return (Array.isArray(animeList) ? animeList : [])
       .map((anime, index) => ({ anime, index, result: calculatePriorityScore(anime) }))
@@ -45,5 +59,5 @@
       .map(entry => ({ ...entry.anime, priorityScore: entry.result.score }));
   }
 
-  return Object.freeze({ calculatePriorityScore, getProgress, rankAnime });
+  return Object.freeze({ calculatePriorityScore, calculateAllocationScore, getProgress, rankAnime });
 });
