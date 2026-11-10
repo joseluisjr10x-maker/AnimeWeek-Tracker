@@ -51,6 +51,21 @@ public class MainActivity extends BridgeActivity {
     }
 
     @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            String[] permissions,
+            int[] grantResults
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == UpdateInstaller.REQUEST_POST_NOTIFICATIONS &&
+                animeWeekUpdateInstaller != null) {
+            boolean granted = grantResults.length > 0 &&
+                    grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED;
+            animeWeekUpdateInstaller.onNotificationPermissionResult(granted);
+        }
+    }
+
+    @Override
     protected void onActivityResult(
             int requestCode,
             int resultCode,
