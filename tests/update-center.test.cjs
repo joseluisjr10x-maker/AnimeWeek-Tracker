@@ -15,6 +15,7 @@ const gradle = read('android/app/build.gradle');
 const paths = read('android/app/src/main/res/xml/file_paths.xml');
 const latest = JSON.parse(read('latest.json'));
 const pkg = JSON.parse(read('package.json'));
+const releaseWorkflow = read('.github/workflows/android-release.yml');
 const webManifest = JSON.parse(read('web/manifest.webmanifest'));
 const themeNames = ['aurora','violet','ocean','sunset','gold','mono','halloween','christmas','newyear','valentines','spring','dayofdead'];
 
@@ -74,4 +75,5 @@ assert.equal(latest.android.enabled, true, 'the verified v95.30.1 Android Releas
 assert.equal(latest.android.versionCode, 9530001);
 assert.ok(latest.android.apkUrl.endsWith('/app-release.apk'), 'latest manifest URL matches the actual Release APK asset');
 assert.ok(latest.android.apkUrl.includes('/v95.30.1/'), 'latest manifest points to the official v95.30.1 APK');
+assert.ok(releaseWorkflow.includes('AnimeWeek-Tracker-${{ steps.version.outputs.version }}.apk'), 'release workflow asset name matches the APK URL published in latest.json');
 console.log('Update center integration checks passed.');
