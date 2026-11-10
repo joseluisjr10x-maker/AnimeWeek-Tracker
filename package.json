@@ -10,7 +10,8 @@
     "doctor": "cap doctor",
     "test:weekly-integrity": "node tests/weekly-integrity.test.cjs",
     "test:update-center": "node tests/update-center.test.cjs",
-    "test:all": "npm run test:weekly-integrity && npm run test:update-center"
+    "test:all": "npm run test:weekly-integrity && npm run test:update-center && npm run test:agenda-priority",
+    "test:agenda-priority": "node tests/agenda-priority.test.cjs"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",
