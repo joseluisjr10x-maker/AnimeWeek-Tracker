@@ -1,5 +1,32 @@
 apply plugin: 'com.android.application'
 
+// Copy the exact original theme emblems from the web assets into Android drawable resources.
+// This keeps the header/PWA artwork and native launcher icons visually identical.
+def animeWeekThemeNames = [
+    'aurora', 'violet', 'ocean', 'sunset', 'gold', 'mono',
+    'halloween', 'christmas', 'newyear', 'valentines', 'spring', 'dayofdead'
+]
+def animeWeekThemeIconSource = new File(rootProject.projectDir.parentFile, 'web/assets/theme-icons')
+
+tasks.register('copyAnimeWeekThemeIcons', Copy) {
+    from(animeWeekThemeIconSource)
+    include animeWeekThemeNames.collect { "${it}.webp" }
+    rename { fileName -> "animeweek_icon_${fileName}" }
+    into layout.projectDirectory.dir('src/main/res/drawable-nodpi')
+    doLast {
+        def missing = animeWeekThemeNames.findAll { name ->
+            !file("src/main/res/drawable-nodpi/animeweek_icon_${name}.webp").isFile()
+        }
+        if (!missing.isEmpty()) {
+            throw new GradleException("Missing original AnimeWeek theme icon assets: ${missing.join(', ')}")
+        }
+    }
+}
+
+tasks.matching { it.name == 'preBuild' }.configureEach {
+    dependsOn(tasks.named('copyAnimeWeekThemeIcons'))
+}
+
 android {
     namespace "com.animeweek.tracker"
     compileSdk rootProject.ext.compileSdkVersion
