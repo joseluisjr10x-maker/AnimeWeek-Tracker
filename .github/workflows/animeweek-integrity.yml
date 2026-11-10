@@ -1,0 +1,22 @@
+name: AnimeWeek Tracker integrity tests
+
+on:
+  push:
+    branches:
+      - feature/agenda-management-priorities-continuity
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  weekly-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run regression tests
+        run: npm run test:all
