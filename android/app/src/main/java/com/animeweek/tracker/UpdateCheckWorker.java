@@ -19,9 +19,6 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
-import androidx.work.OneTimeWorkRequestBuilder;
-import androidx.work.PeriodicWorkRequestBuilder;
-import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -59,8 +56,8 @@ public final class UpdateCheckWorker extends Worker {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
 
-        PeriodicWorkRequest periodic = new PeriodicWorkRequestBuilder<UpdateCheckWorker>(
-                12, TimeUnit.HOURS
+        PeriodicWorkRequest periodic = new PeriodicWorkRequest.Builder(
+                UpdateCheckWorker.class, 12, TimeUnit.HOURS
         ).setConstraints(constraints).build();
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
@@ -69,7 +66,7 @@ public final class UpdateCheckWorker extends Worker {
                 periodic
         );
 
-        OneTimeWorkRequest initial = new OneTimeWorkRequestBuilder<UpdateCheckWorker>()
+        OneTimeWorkRequest initial = new OneTimeWorkRequest.Builder(UpdateCheckWorker.class)
                 .setConstraints(constraints)
                 .build();
         WorkManager.getInstance(context).enqueueUniqueWork(
