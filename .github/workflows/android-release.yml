@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Version name to build (for example 95.30.1)
+        description: Version name to build (for example 95.30.2)
         required: true
-        default: '95.30.1'
+        default: '95.30.2'
         type: string
       publish_release:
         description: Publish this verified APK as an official GitHub Release and activate latest.json
@@ -194,7 +194,7 @@ jobs:
           VERSION_CODE: ${{ steps.version.outputs.version_code }}
           APK_SHA256: ${{ steps.verify.outputs.sha256 }}
           RELEASE_URL: https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.tag }}
-          APK_URL: https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag }}/app-release.apk
+          APK_URL: https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag }}/AnimeWeek-Tracker-${{ steps.version.outputs.version }}.apk
         shell: bash
         run: |
           set -euo pipefail
