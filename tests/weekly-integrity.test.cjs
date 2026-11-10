@@ -9,6 +9,7 @@ function sliceBetween(start, end) {
 }
 const helperCode = sliceBetween('function aniListConfirmedDay(a){', 'async function previewWeeklyRenewal(manual=false){');
 const anchorCode = sliceBetween('function prepareAiringAnchor(proposal,id,targetDay,nextEpisode,latestAired,capacities,days){', 'function normalizeNonAiringSlots(proposal, sourceIds, days){');
+const normalizeCode = sliceBetween('function normalizeNonAiringSlots(proposal, sourceIds, days){', 'function proposalMarksFinished(proposal,id,a){');
 const scheduledCode = sliceBetween('function isScheduled(id){', 'function queueEntry(id,reason){');
 const applyCode = sliceBetween('function applyWeeklyRenewal(){', '// Reorganización manual de la semana ACTUAL.');
 const library = {
@@ -18,7 +19,9 @@ const library = {
   airingWait: {id:'airingWait', title:'Emisión en espera', status:'airing', watched:0},
   completed: {id:'completed', title:'Anime terminado', status:'completed', watched:12, episodes:12},
   paused: {id:'paused', title:'Anime pausado', status:'paused', watched:3, episodes:24},
-  unknown: {id:'unknown', title:'Datos incompletos', status:'watching', watched:0}
+  unknown: {id:'unknown', title:'Datos incompletos', status:'watching', watched:0},
+  high: {id:'high', title:'Prioridad alta', status:'watching', watched:0, episodes:12, agendaPriority:'high', agendaContinuity:true},
+  low: {id:'low', title:'Prioridad baja', status:'watching', watched:8, episodes:12, agendaPriority:'low', agendaContinuity:true}
 };
 const context = {
   data: {},
@@ -33,6 +36,7 @@ const context = {
   scheduleCount: (schedule, day) => (schedule[day] || []).length,
   structuredClone: value => structuredClone(value),
   isEmptyAgendaSlot: slot => !slot || !slot.id,
+  slotEpisodeNumber: slot => { const match=String(slot?.ep||'').match(/(?:episodio|episode|ep\\.?|cap[ií]tulo)\\s*#?\\s*(\\d+)/i)||String(slot?.ep||'').match(/^(\\d+)$/); return match?Number(match[1]):0; },
   WEEK_DAYS: ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'],
   console,
   window: {},
@@ -43,7 +47,7 @@ const context = {
   document: {getElementById: () => null}
 };
 vm.createContext(context);
-vm.runInContext(helperCode + '\n' + anchorCode + '\n' + scheduledCode + '\n' + applyCode, context);
+vm.runInContext(helperCode + '\n' + anchorCode + '\n' + normalizeCode + '\n' + scheduledCode + '\n' + applyCode, context);
 const run = (code) => vm.runInContext(code, context);
 const days = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
 const capacities = {lunes:1,martes:0,miércoles:1,jueves:0,viernes:0,sábado:0,domingo:0};
@@ -125,5 +129,57 @@ assert(html.includes("a.agendaPriority==='high'?42"));
 assert(html.includes("a.agendaPriority==='low'?-42"));
 assert(html.includes("t.a?.agendaContinuity!==false&&tokens.some(other=>other.id===t.id&&Number(other.ep)<Number(t.ep))"));
 assert(html.includes("validateAgendaInvariant(p,p.requiredAgendaAssignments||[])"));
+
+
+// A17: Gestionar agenda redistribuye slots activos y conserva vistos, emisión y estados especiales.
+context.data = {schedule:{}};
+const redistribution = {
+  schedule: {
+    lunes:[{id:'high',ep:'Episodio 1'},{id:'existing',ep:'Episodio 3'}],
+    martes:[{id:'low',ep:'Episodio 9'},{id:'existing',ep:'Episodio 5'}],
+    miércoles:[{id:'existing',ep:'Episodio 4'},{id:'completed',ep:'Episodio 12'}],
+    jueves:[{id:'paused',ep:'Episodio 4'}],
+    viernes:[{id:'unknown',ep:'Episodio 1'}],
+    sábado:[],domingo:[]
+  },
+  doneEpisodeKeys:{'existing|Episodio 3':true},
+  airingInfo:{existing:{latestAired:3,nextEpisode:4,targetDay:'miércoles'}},
+  animeUpdates:{},finished:[]
+};
+context.prepareAgendaRedistribution(redistribution,['high','low','existing','completed','paused','unknown'],days);
+assert.deepStrictEqual(Array.from(redistribution.schedule.lunes.map(x=>x.id)), ['existing']);
+assert.deepStrictEqual(Array.from(redistribution.schedule.martes), []);
+assert.deepStrictEqual(Array.from(redistribution.schedule.miércoles.map(x=>x.id)), ['existing','completed']);
+assert.deepStrictEqual(Array.from(redistribution.schedule.jueves.map(x=>x.id)), ['paused']);
+assert.deepStrictEqual(Array.from(redistribution.schedule.viernes.map(x=>x.id)), ['unknown']);
+assert.strictEqual(redistribution.redistributionStats.redistributed, 2);
+assert.strictEqual(redistribution.redistributionStats.fallback, 3);
+
+// A18: prioridad alta gana la primera asignación frente a prioridad baja; todos reciben una antes de repetir.
+context.getAgendaCapacities = () => ({lunes:1,martes:1,miércoles:1,jueves:1,viernes:0,sábado:0,domingo:0});
+const prioritized = {schedule:{lunes:[],martes:[],miércoles:[],jueves:[],viernes:[],sábado:[],domingo:[]},animeUpdates:{},airingInfo:{},filledSlots:[]};
+context.prepareAgendaRedistribution(prioritized,['high','low'],days);
+context.fillEveryAvailableSlot(prioritized,['high','low'],[]);
+assert.strictEqual(prioritized.schedule.lunes[0].id,'high','Prioridad alta debe ganar la primera asignación redistribuible');
+assert.strictEqual(prioritized.schedule.martes[0].id,'low','Cada anime recibe una asignación antes de repetir otro');
+assert(prioritized.filledSlots.every(x=>x.reason.includes('manual')),'La previsualización debe explicar la prioridad manual');
+
+// A19: continuidad modifica la penalización de frecuencia sin duplicar episodios.
+const continuityOn = {schedule:{lunes:[],martes:[],miércoles:[],jueves:[],viernes:[],sábado:[],domingo:[]},animeUpdates:{},airingInfo:{},filledSlots:[]};
+context.prepareAgendaRedistribution(continuityOn,['high'],days);
+context.getAgendaCapacities = () => ({lunes:1,martes:1,miércoles:0,jueves:0,viernes:0,sábado:0,domingo:0});
+context.fillEveryAvailableSlot(continuityOn,['high'],[]);
+const continuityOff = {schedule:{lunes:[],martes:[],miércoles:[],jueves:[],viernes:[],sábado:[],domingo:[]},animeUpdates:{},airingInfo:{},filledSlots:[]};
+library.high.agendaContinuity=false;
+context.prepareAgendaRedistribution(continuityOff,['high'],days);
+context.fillEveryAvailableSlot(continuityOff,['high'],[]);
+assert.strictEqual(continuityOn.filledSlots[1].priorityScore-continuityOff.filledSlots[1].priorityScore,12,'Continuidad activa distribuye frecuencia con penalización mayor');
+assert.deepStrictEqual(Array.from(continuityOn.schedule.lunes.concat(continuityOn.schedule.martes).map(x=>x.ep)), ['Episodio 1','Episodio 2']);
+assert(new Set(continuityOff.schedule.lunes.concat(continuityOff.schedule.martes).map(x=>x.ep)).size===2,'No se deben duplicar episodios al relajar continuidad');
+
+// A20: ambas operaciones deben invocar redistribución; la reorganización valida toda la propuesta antes de guardar.
+assert(html.includes('prepareAgendaRedistribution(proposal,renewalRedistributionIds'));
+assert(html.includes('prepareAgendaRedistribution(proposal,ids,days)'));
+assert(html.includes('validateWeeklyProposal(p,[])'));
 
 console.log('OK: pruebas de regresión de integridad semanal aprobadas (incluye bloqueo transaccional).');
