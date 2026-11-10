@@ -129,12 +129,12 @@ public final class UpdateCheckWorker extends Worker {
                 return Result.success();
             }
 
-            JSONObject android = root.optJSONObject("android");
-            if (android == null || !android.optBoolean("enabled", false)) {
+            JSONObject androidInfo = root.optJSONObject("android");
+            if (androidInfo == null || !androidInfo.optBoolean("enabled", false)) {
                 return Result.success();
             }
 
-            long publishedCode = android.optLong("versionCode", root.optLong("versionCode", 0L));
+            long publishedCode = androidInfo.optLong("versionCode", root.optLong("versionCode", 0L));
             if (publishedCode <= 0L) return Result.success();
 
             PackageInfo installed = context.getPackageManager()
