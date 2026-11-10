@@ -24,7 +24,7 @@
             android:targetActivity=".MainActivity"
             android:enabled="true"
             android:exported="true"
-            android:icon="@drawable/animeweek_icon_aurora"
+            android:icon="@drawable/animeweek_icon_crop_aurora"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,7 +37,7 @@
             android:targetActivity=".MainActivity"
             android:enabled="false"
             android:exported="true"
-            android:icon="@drawable/animeweek_icon_violet"
+            android:icon="@drawable/animeweek_icon_crop_violet"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,7 +50,7 @@
             android:targetActivity=".MainActivity"
             android:enabled="false"
             android:exported="true"
-            android:icon="@drawable/animeweek_icon_ocean"
+            android:icon="@drawable/animeweek_icon_crop_ocean"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -63,7 +63,7 @@
             android:targetActivity=".MainActivity"
             android:enabled="false"
             android:exported="true"
-            android:icon="@drawable/animeweek_icon_sunset"
+            android:icon="@drawable/animeweek_icon_crop_sunset"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -76,7 +76,7 @@
             android:targetActivity=".MainActivity"
             android:enabled="false"
             android:exported="true"
-            android:icon="@drawable/animeweek_icon_gold"
+            android:icon="@drawable/animeweek_icon_crop_gold"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -89,7 +89,7 @@
             android:targetActivity=".MainActivity"
             android:enabled="false"
             android:exported="true"
-            android:icon="@drawable/animeweek_icon_mono"
+            android:icon="@drawable/animeweek_icon_crop_mono"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -102,7 +102,7 @@
             android:targetActivity=".MainActivity"
             android:enabled="false"
             android:exported="true"
-            android:icon="@drawable/animeweek_icon_halloween"
+            android:icon="@drawable/animeweek_icon_crop_halloween"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -115,7 +115,7 @@
             android:targetActivity=".MainActivity"
             android:enabled="false"
             android:exported="true"
-            android:icon="@drawable/animeweek_icon_christmas"
+            android:icon="@drawable/animeweek_icon_crop_christmas"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -128,7 +128,7 @@
             android:targetActivity=".MainActivity"
             android:enabled="false"
             android:exported="true"
-            android:icon="@drawable/animeweek_icon_newyear"
+            android:icon="@drawable/animeweek_icon_crop_newyear"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -141,7 +141,7 @@
             android:targetActivity=".MainActivity"
             android:enabled="false"
             android:exported="true"
-            android:icon="@drawable/animeweek_icon_valentines"
+            android:icon="@drawable/animeweek_icon_crop_valentines"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -154,7 +154,7 @@
             android:targetActivity=".MainActivity"
             android:enabled="false"
             android:exported="true"
-            android:icon="@drawable/animeweek_icon_spring"
+            android:icon="@drawable/animeweek_icon_crop_spring"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -167,7 +167,7 @@
             android:targetActivity=".MainActivity"
             android:enabled="false"
             android:exported="true"
-            android:icon="@drawable/animeweek_icon_dayofdead"
+            android:icon="@drawable/animeweek_icon_crop_dayofdead"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
