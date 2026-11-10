@@ -45,7 +45,7 @@ assert.ok(manifest.includes('android.permission.POST_NOTIFICATIONS'), 'Android d
 assert.match(installer, /enableUpdateNotifications/, 'native bridge can enable update notifications');
 assert.match(installer, /disableUpdateNotifications/, 'native bridge can disable update notifications');
 assert.match(installer, /areUpdateNotificationsEnabled/, 'native bridge reports notification preference state');
-assert.match(notificationWorker, /PeriodicWorkRequest\\.Builder/, 'background update checks use WorkManager');
+assert.match(notificationWorker, /PeriodicWorkRequest\.Builder/, 'background update checks use WorkManager');
 assert.match(notificationWorker, /12, TimeUnit.HOURS/, 'background update checks run approximately every 12 hours');
 assert.match(notificationWorker, /NotificationCompat\.Builder/, 'background update worker posts Android notifications');
 assert.match(notificationWorker, /last_notified_version_code/, 'background update worker avoids duplicate notifications');
