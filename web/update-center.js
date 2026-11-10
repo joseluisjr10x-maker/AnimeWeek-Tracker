@@ -95,13 +95,35 @@
       '<div class="aw-update-head"><div><div style="font-size:11px;letter-spacing:1.3px;color:var(--muted)">ANIMEWEEK TRACKER</div><h2 id="awUpdateTitle">Centro de actualizaciones</h2></div>' +
       '<button type="button" class="aw-update-muted" id="awUpdateClose" aria-label="Cerrar">✕</button></div>' +
       '<div class="aw-update-box"><div style="font-size:12px;color:var(--muted)">Versión instalada</div><div class="aw-update-version">v' + APP_VERSION + '</div><div id="awUpdateStatus" role="status" aria-live="polite">Listo para consultar GitHub.</div></div>' +
-      '<div id="awUpdateResult"></div><div class="aw-update-actions"><button type="button" class="aw-update-primary" id="awUpdateCheck">Buscar actualizaciones</button><button type="button" class="aw-update-muted" id="awUpdateReleases">Ver Releases</button></div>' +
-      '<p style="font-size:11px;margin:14px 0 0">La APK se verifica antes de abrir el instalador. Android siempre solicita tu confirmación y requiere que el certificado coincida con el de la aplicación instalada.</p></section>';
+      '<div id="awUpdateResult"></div><div class="aw-update-actions"><button type="button" class="aw-update-primary" id="awUpdateCheck">Buscar actualizaciones</button><button type="button" class="aw-update-muted" id="awUpdateReleases">Ver Releases</button><button type="button" class="aw-update-muted" id="awUpdateNotifications">Activar avisos</button></div>' +
+      '<p style="font-size:11px;margin:14px 0 0">Los avisos revisan GitHub aproximadamente cada 12 horas cuando hay conexión. Android puede pedir permiso para mostrar notificaciones.</p>' +
+      '<p style="font-size:11px;margin:8px 0 0">La APK se verifica antes de abrir el instalador. Android siempre solicita tu confirmación y requiere que el certificado coincida con el de la aplicación instalada.</p></section>';
     document.body.appendChild(overlay);
     overlay.addEventListener('click', function (event) { if (event.target === overlay) close(); });
     overlay.querySelector('#awUpdateClose').addEventListener('click', close);
     overlay.querySelector('#awUpdateCheck').addEventListener('click', function () { check(true); });
     overlay.querySelector('#awUpdateReleases').addEventListener('click', function () { window.open(RELEASES_URL, '_blank', 'noopener'); });
+    var notificationButton = overlay.querySelector('#awUpdateNotifications');
+    if (!window.AndroidUpdateInstaller ||
+        typeof window.AndroidUpdateInstaller.enableUpdateNotifications !== 'function') {
+      notificationButton.hidden = true;
+    } else {
+      notificationButton.addEventListener('click', function () {
+        var enabled = false;
+        try {
+          enabled = typeof window.AndroidUpdateInstaller.areUpdateNotificationsEnabled === 'function' &&
+            window.AndroidUpdateInstaller.areUpdateNotificationsEnabled();
+        } catch (_) { }
+        if (enabled) {
+          window.AndroidUpdateInstaller.disableUpdateNotifications();
+        } else {
+          setStatus('Solicitando permiso para avisarte cuando haya una versión nueva…', false);
+          window.AndroidUpdateInstaller.enableUpdateNotifications();
+        }
+        refreshNotificationButton();
+      });
+      refreshNotificationButton();
+    }
     return overlay;
   }
 
@@ -112,6 +134,19 @@
 
   function close() {
     if (overlay) overlay.hidden = true;
+  }
+
+  function refreshNotificationButton() {
+    if (!overlay) return;
+    var button = overlay.querySelector('#awUpdateNotifications');
+    if (!button || !window.AndroidUpdateInstaller) return;
+    var enabled = false;
+    try {
+      enabled = typeof window.AndroidUpdateInstaller.areUpdateNotificationsEnabled === 'function' &&
+        window.AndroidUpdateInstaller.areUpdateNotificationsEnabled();
+    } catch (_) { }
+    button.textContent = enabled ? 'Desactivar avisos automáticos' : 'Activar avisos automáticos';
+    button.setAttribute('aria-pressed', enabled ? 'true' : 'false');
   }
 
   function setStatus(message, isError) {
@@ -194,7 +229,8 @@
   }
 
   window.__awUpdateNativeStatus = function (status, message) {
-    setStatus(message || status || 'Actualizador Android', status === 'error');
+    setStatus(message || status || 'Actualizador Android', status === 'error' || status === 'notifications-denied');
+    refreshNotificationButton();
   };
 
   var priorBackHandler = window.__awUnifiedBack;
