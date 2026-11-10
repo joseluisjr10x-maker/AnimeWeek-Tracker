@@ -212,7 +212,7 @@ jobs:
             'channel': 'stable',
             'publishedAt': __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),
             'releaseName': 'AnimeWeek Tracker ' + version,
-            'releaseNotes': 'Actualización Android verificada y firmada. Consulta GitHub Releases para los detalles.',
+            'releaseNotes': 'Mini actualización: ajustes visuales de Agenda, controles reorganizados y avisos informativos ocultos. Incluye APK Android verificada y firmada.',
             'releaseUrl': os.environ['RELEASE_URL'],
             'minimumSupportedVersion': '95.28.0',
             'web': {'enabled': False, 'version': version, 'url': '', 'sha256': ''},
