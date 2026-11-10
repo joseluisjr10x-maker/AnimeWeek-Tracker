@@ -36,7 +36,7 @@ const context = {
   scheduleCount: (schedule, day) => (schedule[day] || []).length,
   structuredClone: value => structuredClone(value),
   isEmptyAgendaSlot: slot => !slot || !slot.id,
-  slotEpisodeNumber: slot => { const match=String(slot?.ep||'').match(/(?:episodio|episode|ep\\.?|cap[ií]tulo)\\s*#?\\s*(\\d+)/i)||String(slot?.ep||'').match(/^(\\d+)$/); return match?Number(match[1]):0; },
+  slotEpisodeNumber: slot => { const match=String(slot?.ep||'').match(/(?:episodio|episode|ep\.?|cap[ií]tulo)\s*#?\s*(\d+)/i)||String(slot?.ep||'').match(/^(\d+)$/); return match?Number(match[1]):0; },
   WEEK_DAYS: ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'],
   console,
   window: {},
@@ -152,7 +152,7 @@ assert.deepStrictEqual(Array.from(redistribution.schedule.martes), []);
 assert.deepStrictEqual(Array.from(redistribution.schedule.miércoles.map(x=>x.id)), ['existing','completed']);
 assert.deepStrictEqual(Array.from(redistribution.schedule.jueves.map(x=>x.id)), ['paused']);
 assert.deepStrictEqual(Array.from(redistribution.schedule.viernes.map(x=>x.id)), ['unknown']);
-assert.strictEqual(redistribution.redistributionStats.redistributed, 2);
+assert.strictEqual(redistribution.redistributionStats.redistributed, 3);
 assert.strictEqual(redistribution.redistributionStats.fallback, 3);
 
 // A18: prioridad alta gana la primera asignación frente a prioridad baja; todos reciben una antes de repetir.
