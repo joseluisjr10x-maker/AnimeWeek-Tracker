@@ -1,8 +1,8 @@
 {
   "name": "animeweek-tracker",
-  "version": "95.29.0",
+  "version": "95.30.0",
   "private": true,
-  "description": "AnimeWeek Tracker v95.29 adds reliable Android backup confirmation, a centered mobile header, seasonal wallpaper decorations, and theme-specific app logos.",
+  "description": "AnimeWeek Tracker v95.30 restores the original 12 illustrated theme emblems across the app and Android launcher, with color palettes matched to each emblem.",
   "scripts": {
     "android:add": "cap add android",
     "sync": "cap sync android",
