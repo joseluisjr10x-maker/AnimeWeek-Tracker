@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Version name to build (for example 95.29.0)
+        description: Version name to build (for example 95.30.0)
         required: true
-        default: '95.29.0'
+        default: '95.30.0'
         type: string
       publish_release:
         description: Publish this verified APK as an official GitHub Release and activate latest.json
