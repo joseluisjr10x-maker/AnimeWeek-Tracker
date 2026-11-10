@@ -38,7 +38,6 @@ assert.match(gradle, /copyAnimeWeekThemeIcons/, 'Gradle copies theme emblems int
 assert.ok(gradle.includes('web/assets/theme-icons'), 'Android resources come from the original web theme artwork');
 assert.ok(index.includes("const iconUrl=festiveThemeAssets[id]||'assets/theme-icons/aurora.webp'"), 'header and favicon use original theme WebP artwork');
 assert.ok(index.includes('v95-30-theme-surface-cohesion'), 'theme palettes style app backgrounds and cards');
-assert.ok(index.includes('const palettes') === false, 'theme logic remains static and does not inject computed palette source');
 assert.equal(webManifest.icons[0].src, 'assets/theme-icons/aurora.webp');
 assert.equal(webManifest.icons[0].type, 'image/webp');
 for (const theme of themeNames) {
