@@ -1,8 +1,8 @@
 {
   "name": "animeweek-tracker",
-  "version": "95.30.1",
+  "version": "95.30.2",
   "private": true,
-  "description": "AnimeWeek Tracker v95.30.1 removes dark logo rims and adds opt-in background notifications for new GitHub releases.",
+  "description": "AnimeWeek Tracker v95.30.2 removes dark logo rims and adds opt-in background notifications for new GitHub releases.",
   "scripts": {
     "android:add": "cap add android",
     "sync": "cap sync android",
@@ -10,7 +10,8 @@
     "doctor": "cap doctor",
     "test:weekly-integrity": "node tests/weekly-integrity.test.cjs",
     "test:update-center": "node tests/update-center.test.cjs",
-    "test:all": "npm run test:weekly-integrity && npm run test:update-center"
+    "test:all": "npm run test:weekly-integrity && npm run test:update-center && npm run test:agenda-priority",
+    "test:agenda-priority": "node tests/agenda-priority.test.cjs"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",
