@@ -114,6 +114,12 @@ assert(html.includes("isWeeklyFixedAnime(a)||agendaAiringIsConfirmed(a)"));
 assert(html.includes("data.schedule[day]=protectedSlots[day]||[]"));
 assert(html.includes("doneEpisodes.add"));
 
+// A15b: restablecer libera asignaciones hacia la cola sin borrar títulos ni alterar sus estados.
+assert(html.includes("const freedIds=[...new Set(Object.values(previous).flat().filter(slot=>slot?.id&&!protectedIds.has(slot.id)).map(slot=>slot.id))]"));
+assert(html.includes("freedIds.forEach(id=>queueEntry(id,'reset-agenda'))"));
+assert(html.includes("data.waitlist=(data.waitlist||[]).filter(entry=>entry?.id&&anime(entry.id)&&!stillScheduled.has(entry.id))"));
+assert(html.includes("estados, progreso y extras intactos"));
+
 // A16: las prioridades manuales y el control de continuidad participan en el motor de selección.
 assert(html.includes("a.agendaPriority==='high'?42"));
 assert(html.includes("a.agendaPriority==='low'?-42"));
