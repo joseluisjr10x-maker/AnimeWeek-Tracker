@@ -24,16 +24,16 @@ El flujo obtiene automáticamente la huella SHA-256 del keystore y comprueba que
 ## Probar la compilación inicial (sin publicar)
 
 1. En GitHub abre Actions → Build and publish AnimeWeek Android update.
-2. Pulsa Run workflow, deja la rama `main` y escribe `95.29.0` en Version name.
-3. Esta ejecución manual compila y firma la APK, valida el application ID, versionCode y SHA-256 del certificado, y guarda el APK como artefacto temporal de Actions durante 14 días. **No crea un Release ni activa las actualizaciones dentro de la app.**
-4. Comprueba que la ejecución termine correctamente y descarga el artefacto para revisar la APK.
+2. Pulsa Run workflow, deja la rama `main` y escribe la versión deseada.
+3. Deja `Publish release` desactivado para una compilación de prueba. En ese caso la APK se conserva como artefacto temporal de Actions durante 14 días.
+4. Activa `Publish release` únicamente cuando quieras publicar oficialmente: el flujo creará el GitHub Release con la APK firmada y actualizará `latest.json` después de verificar la firma.
 
-## Publicar la primera versión con actualizador
+## Publicar una versión oficial
 
-1. Después de validar el artefacto, crea y sube el tag `v95.29.0`. El evento de tag ejecuta el mismo build y publica la APK como GitHub Release.
-2. El workflow verifica de nuevo la firma de la APK antes de publicarla y actualiza `latest.json` con la URL y SHA-256.
-3. Instala manualmente esa primera APK sobre la instalación existente. El APK actual 2.2 no incluye todavía el Centro de actualizaciones.
-4. Para cada nueva versión, aumenta la versión y crea un tag semántico, por ejemplo `v95.29.0`. GitHub Actions compila, firma, valida y publica el APK; la app recibe el manifiesto actualizado.
+1. En Actions selecciona `Run workflow`, branch `main`, introduce la versión y activa `Publish release`.
+2. GitHub Actions vuelve a compilar y verificar paquete, versionCode y certificado.
+3. Solo si todo pasa, publica el APK en GitHub Releases y actualiza `latest.json` con la URL de descarga y SHA-256.
+4. La aplicación instalada consulta el manifiesto y ofrece las versiones posteriores. La primera versión base se instala manualmente; las siguientes se podrán descargar desde el Centro de actualizaciones.
 
 ## Cambios de v95.29.0
 
