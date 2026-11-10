@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: animeweek-dev-validation
-  cancel-in-progress: true
+  group: animeweek-dev-validation-${{ github.sha }}
+  cancel-in-progress: false
 
 jobs:
   validate-and-build:
