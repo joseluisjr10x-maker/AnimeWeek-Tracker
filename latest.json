@@ -1,27 +1,27 @@
 {
   "appId": "com.animeweek.tracker",
   "appName": "AnimeWeek Tracker",
-  "version": "95.28.0",
-  "versionCode": 9528000,
+  "version": "95.29.0",
+  "versionCode": 9529000,
   "channel": "stable",
-  "publishedAt": "",
-  "releaseName": "",
-  "releaseNotes": "Centro de actualizaciones integrado. La instalación APK se habilitará después de verificar la firma digital de la aplicación instalada.",
-  "releaseUrl": "https://github.com/joseluisjr10x-maker/AnimeWeek-Tracker/releases",
+  "publishedAt": "2026-11-10T00:14:34.699207+00:00",
+  "releaseName": "AnimeWeek Tracker 95.29.0",
+  "releaseNotes": "Actualización Android verificada y firmada. Consulta GitHub Releases para los detalles.",
+  "releaseUrl": "https://github.com/joseluisjr10x-maker/AnimeWeek-Tracker/releases/tag/v95.29.0",
   "minimumSupportedVersion": "95.28.0",
   "web": {
     "enabled": false,
-    "version": "95.28.0",
+    "version": "95.29.0",
     "url": "",
     "sha256": ""
   },
   "android": {
-    "enabled": false,
-    "versionCode": 9528000,
-    "apkUrl": "",
-    "sha256": "",
+    "enabled": true,
+    "versionCode": 9529000,
+    "apkUrl": "https://github.com/joseluisjr10x-maker/AnimeWeek-Tracker/releases/download/v95.29.0/AnimeWeek-Tracker-95.29.0.apk",
+    "sha256": "0d3cba535eededb4a9dbef443935e57720ae8946601a1591e25b115e251c0f8d",
     "packageName": "com.animeweek.tracker",
     "signingRequired": true,
-    "notes": "La APK debe tener el mismo certificado de firma que la app instalada."
+    "notes": "APK verificada contra el certificado del keystore configurado."
   }
 }
