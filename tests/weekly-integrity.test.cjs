@@ -15,7 +15,10 @@ const library = {
   existing: {id:'existing', title:'Anime existente', status:'airing', watched:2, nextLabel:'Episodio 3'},
   blocker: {id:'blocker', title:'Anime que ocupa el día', status:'watching', watched:1},
   waiting: {id:'waiting', title:'Anime en espera', status:'planned', watched:0},
-  airingWait: {id:'airingWait', title:'Emisión en espera', status:'airing', watched:0}
+  airingWait: {id:'airingWait', title:'Emisión en espera', status:'airing', watched:0},
+  completed: {id:'completed', title:'Anime terminado', status:'completed', watched:12, episodes:12},
+  paused: {id:'paused', title:'Anime pausado', status:'paused', watched:3, episodes:24},
+  unknown: {id:'unknown', title:'Datos incompletos', status:'watching', watched:0}
 };
 const context = {
   data: {},
@@ -29,6 +32,7 @@ const context = {
   isSpecialExtra: () => false,
   scheduleCount: (schedule, day) => (schedule[day] || []).length,
   structuredClone: value => structuredClone(value),
+  isEmptyAgendaSlot: slot => !slot || !slot.id,
   WEEK_DAYS: ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'],
   console,
   window: {},
@@ -88,5 +92,32 @@ context.data = {schedule:{legacy:[{id:'existing'}], lunes:[]}};
 assert.strictEqual(context.isScheduled('existing'), false);
 context.data.schedule.lunes=[{id:'existing'}];
 assert.strictEqual(context.isScheduled('existing'), true);
+
+// A13: el snapshot de agenda incluye todos los títulos, aunque estén completados, pausados o tengan datos incompletos.
+context.data = {schedule:{lunes:[{id:'completed',ep:'Episodio 12'}],martes:[{id:'paused',ep:'Episodio 4'}],miércoles:[{id:'unknown',ep:'Episodio 1'}],jueves:[],viernes:[],sábado:[],domingo:[]}};
+const required = context.captureRequiredAgendaAssignments(context.data.schedule);
+assert.deepStrictEqual(Array.from(required.map(x=>x.id)), ['completed','paused','unknown']);
+const proposalAll = {schedule:{lunes:[],martes:[],miércoles:[],jueves:[],viernes:[],sábado:[],domingo:[]},requiredAgendaAssignments:required};
+context.restoreRequiredAgendaAssignments(proposalAll,required);
+assert.deepStrictEqual(Array.from(context.validateAgendaInvariant(proposalAll,required)), []);
+assert.deepStrictEqual(Array.from(['lunes','martes','miércoles'].map(day=>proposalAll.schedule[day][0].id)), ['completed','paused','unknown']);
+
+// A14: si falta un título o ya no existe en biblioteca, la validación impide aplicar la propuesta.
+proposalAll.schedule.martes=[];
+assert(context.validateAgendaInvariant(proposalAll,required).some(x=>x.includes('pausado')));
+proposalAll.schedule.martes=[{id:'paused',ep:'Episodio 4'}];
+const missingLibrary = [...required,{id:'deleted',day:'jueves',slot:{id:'deleted',ep:'Episodio 1'}}];
+assert(context.validateAgendaInvariant(proposalAll,missingLibrary).some(x=>x.includes('deleted')));
+
+// A15: el reset conserva solo títulos protegidos, sin depender del estado de progreso de la biblioteca.
+assert(html.includes("isWeeklyFixedAnime(a)||agendaAiringIsConfirmed(a)"));
+assert(html.includes("data.schedule[day]=protectedSlots[day]||[]"));
+assert(html.includes("doneEpisodes.add(\`\${slot.id}|\${slot.ep||''}\`)"));
+
+// A16: las prioridades manuales y el control de continuidad participan en el motor de selección.
+assert(html.includes("a.agendaPriority==='high'?42"));
+assert(html.includes("a.agendaPriority==='low'?-42"));
+assert(html.includes("t.a?.agendaContinuity!==false&&tokens.some(other=>other.id===t.id&&Number(other.ep)<Number(t.ep))"));
+assert(html.includes("validateAgendaInvariant(p,p.requiredAgendaAssignments||[])"));
 
 console.log('OK: pruebas de regresión de integridad semanal aprobadas (incluye bloqueo transaccional).');
