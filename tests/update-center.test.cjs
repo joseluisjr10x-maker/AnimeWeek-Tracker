@@ -20,6 +20,7 @@ const webManifest = JSON.parse(read('web/manifest.webmanifest'));
 const themeNames = ['aurora','violet','ocean','sunset','gold','mono','halloween','christmas','newyear','valentines','spring','dayofdead'];
 
 assert.match(index, /<script src="update-center\.js"><\/script>/, 'web app loads the update center');
+assert.match(index, /agenda-notice-visibility[\s\S]*?\.notice\{display:none!important\}/, 'informational notice boxes are hidden without deleting their markup');
 assert.match(index, /<\/body>\s*<\/html>\s*$/, 'document has a single final HTML close');
 assert.match(index, /nativeBridge\.saveJson\(safeName,json,requestId\)/, 'Android backup passes its confirmation callback ID');
 assert.match(backupBridge, /saveJson\(String filename, String json, String callbackId\)/, 'native backup bridge accepts the confirmation callback ID');
