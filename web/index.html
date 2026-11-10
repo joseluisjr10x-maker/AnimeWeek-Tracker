@@ -2247,7 +2247,7 @@ function prepareAgendaRedistribution(proposal,sourceIds,days){
    const total=Math.max(0,Number(proposal.animeUpdates?.[id]?.episodes)||Number(a.episodes)||Number(a.totalEpisodes)||0);
    const finished=proposalMarksFinished(proposal,id,a);
    let preserve=fixed||done||confirmedAnchor||unanchoredAiring||unconfirmedAiring;
-   if(!preserve&&(status==='completed'||status==='paused'||finished||total<=0)){
+   if(!preserve&&!info&&(status==='completed'||status==='paused'||finished||total<=0)){
     if(!fallbackKept.has(id)){preserve=true;fallbackKept.add(id);stats.fallback++;}
    }
    if(preserve){kept.push(slot);stats.protected++;}
